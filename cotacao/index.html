@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f3d5e"><link rel="manifest" href="/cotacao/manifest.json"><meta name="theme-color" content="#1f4e79"><link rel="icon" href="/cotacao/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/cotacao/icon.svg">
+<title>Alta Performance - Cotação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/cotacao/app.css?v=9">
+
+
+</head>
+<body class="lock">
+
+<div id="auth" hidden>
+<div class="aub">
+<h1>Alta Performance - Cotação</h1>
+<div id="auLogin"><label for="auEmail">E-mail</label><input id="auEmail" type="email" autocomplete="username" inputmode="email"><label for="auSenha">Senha</label><input id="auSenha" type="password" autocomplete="current-password"><button class="p" id="auEntrar" style="width:100%;margin-top:14px">Entrar</button><button id="auVaiCad" class="lk">Primeiro acesso? Criar conta</button>
+</div>
+<div id="auCad" hidden><h2>Criar conta</h2><label for="cdNome">Nome</label><input id="cdNome" autocomplete="name"><label for="cdCargo">Cargo</label><input id="cdCargo" value="Vendedor Externo"><label for="cdTel">Telefone</label><input id="cdTel" inputmode="tel" autocomplete="tel"><label for="cdEmail">E-mail</label><input id="cdEmail" type="email" autocomplete="email"><label for="cdSenha">Senha (mínimo 6 caracteres)</label><input id="cdSenha" type="password" autocomplete="new-password"><button class="p" id="auCriar" style="width:100%;margin-top:14px">Criar conta</button><button id="auVolta" class="lk">Voltar</button></div>
+<div id="auWait" hidden><h2>Cadastro recebido</h2><p>Seu acesso precisa ser aprovado pelo administrador. Quando for liberado, o app abre sozinho.</p><button class="p" id="auVer" style="width:100%">Já fui aprovado? Verificar</button><button id="auSair" class="lk">Sair</button></div>
+<div id="auBlock" hidden><h2>Acesso bloqueado</h2><p>Fale com o administrador.</p><button id="auVer2" style="width:100%">Verificar de novo</button><button id="auSair2" class="lk">Sair</button></div>
+<div id="auCfg" hidden><h2>Falta configurar</h2><p>Abra o arquivo <b>config.js</b> e coloque o endereço e a chave do seu projeto Supabase.</p></div>
+<div class="warn" id="auMsg" hidden style="max-width:none;margin:12px 0 0"></div>
+</div>
+</div>
+
+<header class="hd"><h1>Alta Performance - Cotação</h1><div class="tb"><span id="tbl"></span><span id="sync"></span></div><nav class="nv"><button id="tCot" class="on">Início</button><button id="bHist">Histórico<i id="nHist"></i></button><button id="bPromo">Promoções<i id="nPromo"></i></button><button id="bAdm" hidden>Admin<i id="nAdm"></i></button><button id="bAvi" class="ic" hidden aria-label="Avisos">🔔<i id="nAvi"></i></button><button id="bCfg" class="ic" aria-label="Dados do vendedor">⚙</button></nav></header>
+<button id="bNew" class="or">+ Nova cotação</button>
+
+<div id="pCfg" class="card" hidden><h2>Dados do vendedor (saem no PDF)</h2><label for="sNome">Nome</label><input id="sNome"><label for="sCargo">Cargo</label><input id="sCargo"><label for="sTel">Telefone</label><input id="sTel" inputmode="tel"><button class="p" id="sSave" style="width:100%;margin-top:10px">Salvar dados</button>
+<h2 style="margin-top:18px">Backup</h2><div class="row"><button type="button" id="bExp">Exportar backup</button><button type="button" id="bImp">Importar backup</button></div><input type="file" id="fImp" accept=".json,application/json" hidden><div class="hint">Guarda o histórico e os dados do vendedor num arquivo. Ao importar, junta com o que já existe, sem apagar nada.</div><label class="ck" style="margin-top:14px"><input type="checkbox" id="cfgImg" checked> Enviar também a imagem da cotação junto com o PDF (ajuda a mostrar a prévia no WhatsApp)</label><h2 style="margin-top:18px">Conta</h2><div class="hint" id="cfgConta"></div><button id="bSair" style="width:100%;margin-top:6px">Sair da conta</button></div>
+
+<div id="pHist" hidden><h2>Cotações salvas</h2><input id="hq" placeholder="Buscar cliente ou contato" autocomplete="off" style="margin-bottom:8px"><div class="chips" id="hf" style="margin-bottom:8px"></div><div id="hList"></div></div>
+<div id="pAdm" hidden>
+<h2>Tabelas de preço</h2>
+<div class="hint">A tabela nova vira a ativa e a anterior fica arquivada. Você vê as diferenças antes de publicar.</div>
+<div id="admTabs"></div>
+<label for="fPdf">Subir tabela nova (PDF)</label><input type="file" id="fPdf" accept="application/pdf">
+<div id="admUp"></div>
+<h2 style="margin-top:18px">Promoções</h2>
+<div id="admPromo"><div id="admPromoList"></div><button class="p" id="pmNova" style="width:100%;margin-top:6px">+ Nova promoção</button><div id="pmForm"></div></div>
+<h2 style="margin-top:18px">Avisos aos vendedores</h2>
+<div id="admAvi"><textarea id="avT" rows="3" placeholder="Ex.: Tabela nova a partir de segunda-feira."></textarea>
+<div class="row" style="align-items:flex-end;margin-top:6px"><div><label>Mostrar até (opcional)</label><input type="date" id="avF"></div><button class="p" id="avPub">Publicar aviso</button></div></div><div id="avList"></div>
+<h2 style="margin-top:18px">Pessoas</h2><div id="admUsers"></div>
+<h2 style="margin-top:18px">Backup e Supabase ativo</h2>
+<button id="bkp" style="width:100%">Baixar backup (tabelas, promoções, avisos e pessoas)</button>
+<div class="hint">Cada vendedor guarda o próprio backup de cotações em ⚙. O plano gratuito do Supabase não faz backup, então baixe este arquivo de vez em quando.</div>
+<label>Endereço para manter o Supabase ativo (ping semanal)</label><input id="pingUrl" readonly>
+<div class="row" style="margin-top:6px"><button id="pingCopy">Copiar endereço</button><button id="pingTest">Testar agora</button></div>
+<div class="hint">Cole este endereço em um serviço gratuito de agendamento (ex.: cron-job.org) para abrir 1 vez por semana. Isso evita a pausa por inatividade.</div>
+</div>
+<div id="pAvi" hidden><h2>Avisos</h2><div id="aviList"></div></div>
+<div id="pPromo" hidden><h2>Promoções</h2><div class="chips" id="pmChips"></div><div id="pmList"></div></div>
+<div id="bnView" hidden><img id="bnImg" alt="Banner"></div>
+
+
+<div id="hsBox" hidden><input id="hs" type="search" placeholder="Consultar preço: medida, modelo, serviço…" autocomplete="off"><div id="hsRes"></div></div>
+<div id="home"></div>
+<div id="ed">
+<div class="tpt" id="tpTit"></div>
+<div class="card">
+<label for="cli">Cliente</label>
+<div class="cb"><input id="cli" placeholder="Digite ou escolha o cliente" autocomplete="off"><button type="button" id="cliBtn" aria-label="Abrir lista de clientes">▾</button><div id="cliList" class="cl" hidden></div></div>
+<label for="ct">Contato</label><input id="ct" placeholder="Nome do contato (opcional)" autocomplete="off">
+<label for="dt">Data da cotação</label><input id="dt" type="date">
+<details style="margin-top:8px"><summary style="color:var(--az)">Condições comerciais</summary>
+<label for="val">Validade</label><input id="val">
+
+<label for="ent" id="entL">Entregas</label><input id="ent"></details>
+</div>
+
+<div class="tabs" id="tabs"></div>
+
+<div class="card"><h2>Pagamento</h2>
+<select id="par"><option value="0">À vista</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option><option value="9">9x</option><option value="10">10x</option></select>
+<label for="pag">Texto no PDF</label><input id="pag">
+<div class="warn" id="pn" hidden style="margin:8px 0 0;max-width:none"></div></div>
+<div class="card" id="clsCard" hidden><h2>Categoria do veículo</h2><select id="cls"><option value="0">Passeio</option><option value="1">Leve / Van / Caminhonete / SUV</option><option value="2">Meia carga</option><option value="3">Linha pesada</option></select><div class="hint">Os preços dos serviços mudam conforme a categoria.</div></div>
+<div class="card">
+<h2 id="addH">Adicionar pneu ou item</h2>
+<input id="q" type="search" placeholder="Medida, marca ou modelo (ex.: 275 FS558)" autocomplete="off">
+<div class="chips" id="chips"></div>
+<div class="res" id="res"></div>
+<button type="button" id="bLivre" hidden style="width:100%;margin-top:8px"></button>
+</div>
+
+<div class="card"><h2 id="itH">Itens</h2><div id="items"></div></div>
+
+</div>
+
+<div class="bar" id="bar">
+<div class="tot"><span id="tq">0 pneus</span><b id="tt">R$ 0,00</b></div>
+<div class="row"><button class="p" id="bPrev" disabled>Visualizar</button><button id="bPdf" disabled>PDF</button><button id="bXls" disabled>Excel</button><button id="bSave">Salvar</button></div>
+<div class="hint" id="msg" style="padding:6px 0 0"></div>
+</div>
+
+<div id="pv" class="pv" hidden><div class="pvb"><button id="pvBack">← Voltar e editar</button><button class="p" id="pvSend">Enviar PDF</button></div><div class="tabs pvb" id="pvTabs" style="flex-wrap:wrap"></div><div class="warn" id="pvWarn" hidden></div><div class="paper" id="paper"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>window.AP_CFG={url:"https://iexsmqkxozajtpqtgxsv.supabase.co",key:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlleHNtcWt4b3phanRwcXRneHN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1NzIxNDQsImV4cCI6MjExMDE0ODE0NH0.OMFYzxrXqKEFBDFCAu6K38c5rFlPtzVPjls1NYCj3Lc"};
+window.ask=m=>Promise.resolve(window.confirm(m));</script>
+
+<script src="/cotacao/parser.js?v=9"></script>
+<script src="/cotacao/lib.js?v=9"></script>
+<script src="/cotacao/app.js?v=9"></script>
+
+
+
+<script>if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/cotacao/sw.js",{scope:"/cotacao/"}).catch(()=>{}));</script>
+</body>
+</html>
