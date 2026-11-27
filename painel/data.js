@@ -150,7 +150,7 @@ window.PAINEL = {
       fala: "Ideia: guia em PDF dos tipos de pneu de carga." }
   ],
   decisoes: [
-    { id: "sermao", pergunta: "Sermão Estruturado e Páulpito", opcoes: ["Juntar num app só", "Manter separados"] },
+    { id: "sermao", pergunta: "Sermão Estruturado e Púlpito", opcoes: ["Juntar num app só", "Manter separados"] },
     { id: "marca", pergunta: "Nome da marca", opcoes: ["DMX", "Nexus DMX"] },
     { id: "assistente", pergunta: "Assistente Pessoal", opcoes: ["Planilha com o Claude", "App próprio"] }
   ]
