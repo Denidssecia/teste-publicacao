@@ -23,6 +23,7 @@ header{background:linear-gradient(160deg,var(--navy),var(--navy2));color:#fff;pa
 .top h1{font-size:21px;margin:0;letter-spacing:.2px}
 .top small{display:block;opacity:.7;font-size:12px;margin-top:2px}
 .gear{background:rgba(255,255,255,.12);border:0;color:#fff;width:40px;height:40px;border-radius:12px;font-size:20px}
+.atual{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;background:var(--gold);color:var(--navy);text-decoration:none;font-weight:800;font-size:16px;padding:12px;border-radius:14px}
 .prog{margin-top:16px}
 .prog .lbl{display:flex;justify-content:space-between;font-size:13px;opacity:.9}
 .bar{height:10px;background:rgba(255,255,255,.18);border-radius:10px;margin-top:6px;overflow:hidden}
@@ -107,6 +108,7 @@ select.pb option{color:#000}
     <div class="bar"><i id="progBar"></i></div>
   </div>
   <div class="prazos" id="prazos"></div>
+  <a class="atual" id="atual" target="_blank" rel="noopener">↻ Atualizar hoje</a>
   <div class="seg"><button id="tHoje" class="on">Hoje</button><button id="tTudo">Painel completo</button></div>
 </header>
 <div class="previa" id="previa" hidden>Prévia no Claude. Tudo funciona aqui, menos a voz do ElevenLabs e o download do backup: esses dois só funcionam no site publicado.</div>
@@ -148,6 +150,8 @@ const esc = s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"
 const fmt = iso=>{const [y,m,d]=iso.split("-");return d+"/"+m+"/"+y};
 const dias = iso=>Math.ceil((new Date(iso+"T23:59:59")-new Date())/864e5);
 if(PREVIA) $("#previa").hidden=false;
+const PEDIDO_ATUALIZAR = "Atualize hoje o meu Painel de Projetos (use a skill publicar-sem-notebook).\n1. Leia painel/data.js no GitHub Denidssecia/teste-publicacao, pelo Zapier.\n2. Busque as novidades: pastas e mudanças recentes do repositório, sites no Netlify, projetos e tabelas do Supabase e o que está na minha memória.\n3. Mude os cartões que avançaram (pendente, andamento, no ar), atualize a data e o resumo falado, com números por extenso.\n4. Publique o data.js pelo Zapier e confira em apps-denilson.netlify.app/painel.\n5. Me diga em poucas linhas o que mudou.";
+$("#atual").href = "https://claude.ai/new?q="+encodeURIComponent(PEDIDO_ATUALIZAR);
 
 function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("on"),2600)}
 
