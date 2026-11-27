@@ -4,7 +4,7 @@
 window.PAINEL = {
   versao: "1.0",
   atualizado: "2026-11-27",
-  resumoFala: "Painel de projetos, atualizado em vinte e sete de novembro. São vinte e sete frentes: sete concluídas, oito em andamento, nove pendentes e três ideias. Novidades: o App de Coleta está no ar com banco de dados, o banco do Financeiro da igreja está pronto, o FalaGrana versão dois está no ar e o banco da Cotação foi juntado ao da Coleta. O painel está no ar e falta só a chave da voz.",
+  resumoFala: "Painel de projetos, atualizado em vinte e sete de novembro. São vinte e sete frentes: sete concluídas, nove em andamento, oito pendentes e três ideias. Novidades: o Financeiro da igreja já tem cento e três lançamentos no banco e falta fechar o mês; o FalaGrana versão dois, o App Start, a Tesouraria, a Coleta e a Consolidação versão quatro já abrem sem pedir login do Netlify. A Coleta e a Cotação continuam esperando o teste com cliente real e a migração para o endereço novo. O painel está no ar e falta só a chave da voz.",
   hoje: ["financeiro", "coleta", "cotacao2"],
   prazos: [
     { titulo: "Fim do jogo do Start", data: "2026-12-15" },
@@ -33,11 +33,11 @@ window.PAINEL = {
 
     // ---------- EM ANDAMENTO ----------
     { id: "financeiro", estado: "final", urgente: true, titulo: "Financeiro da Igreja Prosseguir",
-      resumo: "Banco tesouraria-prosseguir ativo no Supabase, com membros, lançamentos, meses, pedidos e auditoria. Ainda sem lançamentos.",
-      motivo: "Primeira versão ainda não testada com um mês real.",
-      acao: "Lançar um mês real e conferir os totais. O módulo de pedido de verba fica para depois.",
-      agora: { tipo: "texto", para: "claude", texto: "Financeiro da Igreja Prosseguir: o banco tesouraria-prosseguir já está pronto. Me diga onde o app está publicado, o que falta e como lanço um mês real para testar hoje." },
-      fala: "Financeiro da Igreja Prosseguir. É o único com urgência. O banco já está pronto no Supabase, mas ainda sem lançamentos. Ação: lançar um mês real e conferir os totais." },
+      resumo: "Banco tesouraria-prosseguir ativo no Supabase, com 3 membros e 103 lançamentos de sete departamentos (entre 23 e 24/11). Nenhum mês fechado ainda.",
+      motivo: "Os lançamentos já entraram, mas falta fechar o mês e conferir os totais.",
+      acao: "Fechar o mês e conferir os totais. O módulo de pedido de verba fica para depois.",
+      agora: { tipo: "texto", para: "claude", texto: "Financeiro da Igreja Prosseguir: já há 103 lançamentos no banco tesouraria-prosseguir. Me ajude a fechar o mês e conferir os totais hoje." },
+      fala: "Financeiro da Igreja Prosseguir. Continua sendo o único com urgência. O banco já tem três membros e cento e três lançamentos, de sete departamentos. Falta fechar o mês e conferir os totais." },
     { id: "start", estado: "final", titulo: "App Start — migração", prazo: "2026-12-15",
       resumo: "Migrando só para o Netlify, com login por código.",
       motivo: "Faltam: logo da igreja, aba Escola, enxugar a tela inicial, auditoria de dados de menores e tela de campeão.",
@@ -72,13 +72,13 @@ window.PAINEL = {
       agora: { tipo: "link", url: "https://app.netlify.com/projects/apps-denilson/configuration/env", rotulo: "Abrir variáveis no Netlify",
         texto: "1. No ElevenLabs (elevenlabs.io): Developers > API Keys > crie uma chave e copie.\n2. No ElevenLabs, adicione a voz Yuri em My Voices.\n3. Toque no botão amarelo (Netlify > apps-denilson > Environment variables).\n4. Add a variable: nome ELEVENLABS_API_KEY, valor = a chave copiada. Salve.\n5. Volte aqui e diga: “chave da voz cadastrada”. Eu republico e a voz liga." },
       fala: "Painel de Projetos. Já está no ar, publicado direto pelo Claude, sem notebook. Falta só cadastrar a chave do ElevenLabs no Netlify para ligar a voz. Dá para fazer pelo celular." },
-    { id: "netlifyacesso", estado: "travado", titulo: "Netlify: sites antigos com bloqueio de login",
-      resumo: "FalaGrana, Tesouraria, Central, App Start e outros sites antigos pedem login do Netlify para abrir. O apps-denilson não tem esse problema.",
-      motivo: "A proteção “Team login” está ligada para todas as versões. Quem não está logado na sua conta não entra.",
-      acao: "Em cada site, deixar o login só para versões de teste. O Claude não tem permissão para mudar isso.",
-      agora: { tipo: "link", url: "https://app.netlify.com/projects/falagrana/configuration/general", rotulo: "Abrir configuração do FalaGrana",
-        texto: "Em cada site no Netlify:\n1. Project configuration > Access & security > Visitor access.\n2. Em “Team login”, escolha “Non-production deploys only”.\n3. Salve.\nFaça no falagrana, tesouraria-prosseguir, central-denilson e app-start-4yrv. Ou, melhor: peça ao Claude para mudar o app para o apps-denilson." },
-      fala: "Netlify. Vários sites seus pedem login do Netlify para abrir, então quem não está logado na sua conta não entra. Ação: deixar esse login só para as versões de teste, em cada site." },
+    { id: "netlifyacesso", estado: "final", titulo: "Netlify: sites antigos com bloqueio de login",
+      resumo: "Já abrem sem pedir login: FalaGrana v2, App Start, Tesouraria, Coleta e Consolidação v4. Ainda pedem login: o FalaGrana antigo e a Central antiga.",
+      motivo: "Sobraram só dois sites antigos com a proteção “Team login” ligada para todas as versões.",
+      acao: "Os dois são versões antigas: pode deixar como estão, ou me peça para trocar por versões no apps-denilson. O Claude não tem permissão para mudar essa proteção.",
+      agora: { tipo: "link", url: "https://app.netlify.com/projects/falagrana/configuration/general", rotulo: "Abrir configuração do FalaGrana antigo",
+        texto: "Só se quiser abrir os dois antigos (falagrana e central-denilson). Em cada site no Netlify:\n1. Project configuration > Access & security > Visitor access.\n2. Em “Team login”, escolha “Non-production deploys only”.\n3. Salve." },
+      fala: "Netlify. Boa notícia: o FalaGrana versão dois, o App Start, a Tesouraria, a Coleta e a Consolidação versão quatro já abrem sem pedir login. Sobraram só dois sites antigos, o FalaGrana antigo e a Central antiga." },
     { id: "github", estado: "noar", titulo: "Publicação sem notebook",
       resumo: "Funcionando: o Claude envia para o GitHub (repositório teste-publicacao) e o Netlify publica sozinho em apps-denilson.netlify.app.",
       fala: "Publicação sem notebook. Já funciona: o Claude manda os arquivos para o GitHub e o Netlify publica sozinho." },
@@ -95,10 +95,11 @@ window.PAINEL = {
       agora: { tipo: "texto", para: "claude", texto: "App de Cotação, fase 2: traga os arquivos do app, aponte para o banco alta-performance-coleta (app: 'cotacao' no cadastro), publique em apps-denilson.netlify.app/cotacao e confira o PDF e o link aberto para outra pessoa." },
       fala: "App de Cotação, fase dois. O banco já foi juntado ao da coleta, com tabelas de preço, cotações e promoções. Falta trazer o app para o endereço novo e conferir o PDF e o link." },
     { id: "consolidacao", estado: "travado", titulo: "Consolidação Prosseguir",
+      resumo: "A versão oficial é a v4, em conhecer-prosseguir-v4.netlify.app, e já abre sem login. As outras versões ficam de lado.",
       motivo: "O Chrome não oferece instalação.",
       acao: "Auditar manifesto, ícones e service worker; incluir navegação livre e áudios numa entrega só.",
       agora: { tipo: "texto", para: "claude", texto: "Consolidação Prosseguir: o Chrome não oferece instalar. Audite manifesto, ícones e service worker e, na mesma entrega, inclua a navegação livre e os áudios." },
-      fala: "Consolidação Prosseguir. O Chrome não oferece a instalação. Ação: revisar manifesto, ícones e service worker, e incluir a navegação livre e os áudios numa entrega só." },
+      fala: "Consolidação Prosseguir. A versão oficial é a quatro, e ela já abre sem login. O Chrome não oferece a instalação. Ação: revisar manifesto, ícones e service worker, e incluir a navegação livre e os áudios numa entrega só." },
     { id: "juroclaro", estado: "noar", titulo: "Juro Claro",
       resumo: "No ar em apps-denilson.netlify.app/juroclaro.",
       fala: "Juro Claro. Já está no ar, no endereço de apps do Denilson." },
@@ -149,7 +150,7 @@ window.PAINEL = {
       fala: "Ideia: guia em PDF dos tipos de pneu de carga." }
   ],
   decisoes: [
-    { id: "sermao", pergunta: "Sermão Estruturado e Púlpito", opcoes: ["Juntar num app só", "Manter separados"] },
+    { id: "sermao", pergunta: "Sermão Estruturado e Páulpito", opcoes: ["Juntar num app só", "Manter separados"] },
     { id: "marca", pergunta: "Nome da marca", opcoes: ["DMX", "Nexus DMX"] },
     { id: "assistente", pergunta: "Assistente Pessoal", opcoes: ["Planilha com o Claude", "App próprio"] }
   ]
