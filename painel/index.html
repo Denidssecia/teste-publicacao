@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Painel de Projetos</title>
+<meta name="theme-color" content="#0f1b3d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<style>
+:root{
+  --bg:#eef1f7;--card:#fff;--ink:#14213d;--muted:#5b6478;--line:#e2e6ef;
+  --navy:#0f1b3d;--navy2:#1d2f63;--gold:#f5b301;
+  --noar:#14a44d;--final:#e08a00;--travado:#d93636;--ideia:#7a4cd9;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+body{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
+button{font:inherit;cursor:pointer}
+header{background:linear-gradient(160deg,var(--navy),var(--navy2));color:#fff;padding:calc(18px + env(safe-area-inset-top)) 18px 18px;border-radius:0 0 22px 22px}
+.top{display:flex;align-items:center;justify-content:space-between}
+.top h1{font-size:21px;margin:0;letter-spacing:.2px}
+.top small{display:block;opacity:.7;font-size:12px;margin-top:2px}
+.gear{background:rgba(255,255,255,.12);border:0;color:#fff;width:40px;height:40px;border-radius:12px;font-size:20px}
+.prog{margin-top:16px}
+.prog .lbl{display:flex;justify-content:space-between;font-size:13px;opacity:.9}
+.bar{height:10px;background:rgba(255,255,255,.18);border-radius:10px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--gold);border-radius:10px;transition:width .4s}
+.prazos{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.prazo{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.1);padding:9px 12px;border-radius:12px;font-size:14px}
+.prazo b{color:var(--gold);font-size:16px}
+.seg{display:flex;background:rgba(255,255,255,.12);border-radius:14px;padding:4px;margin-top:16px}
+.seg button{flex:1;border:0;background:transparent;color:#fff;padding:10px;border-radius:11px;font-weight:600;font-size:15px}
+.seg button.on{background:#fff;color:var(--navy)}
+.previa{background:#fff4e0;color:#8a5600;font-size:13px;line-height:1.4;padding:10px 14px;margin:12px 14px 0;border-radius:12px;font-weight:600}
+main{padding:14px 14px 0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px}
+.stat{background:var(--card);border-radius:14px;padding:10px 4px;text-align:center;border-top:4px solid}
+.stat b{display:block;font-size:22px}
+.stat span{font-size:11px;color:var(--muted)}
+h2{font-size:15px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:22px 4px 10px;display:flex;align-items:center;gap:8px}
+h2 .dot{width:10px;height:10px;border-radius:50%}
+.card{background:var(--card);border-radius:18px;padding:15px 15px 14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(20,33,61,.06);border-left:6px solid var(--c);transition:box-shadow .3s,transform .3s}
+.card.reading{box-shadow:0 0 0 3px var(--gold),0 6px 20px rgba(20,33,61,.18);transform:scale(1.01)}
+.card.adiado{opacity:.6}
+.card .hd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.card h3{margin:0;font-size:17px;line-height:1.25}
+.tag{flex:none;font-size:11px;font-weight:700;color:#fff;background:var(--c);padding:4px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px}
+.card p{margin:8px 0 0;font-size:15px;line-height:1.45;color:#2b3550}
+.card .k{font-weight:700;color:var(--ink)}
+.flags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.flag{font-size:12px;background:#fff4e0;color:#8a5600;padding:3px 8px;border-radius:8px;font-weight:600}
+.flag.red{background:#fde7e7;color:#a01d1d}
+.flag.blue{background:#e6edff;color:#1d3a8a}
+.acts{display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap}
+.chk{display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:12px;padding:8px 11px;font-weight:600;font-size:14px;background:#fff;color:var(--ink)}
+.chk .box{width:20px;height:20px;border-radius:6px;border:2px solid #9aa3b5;display:grid;place-items:center;font-size:14px;color:#fff}
+.chk.on{border-color:var(--noar);background:#ebf8f0}
+.chk.on .box{background:var(--noar);border-color:var(--noar)}
+.btn{border:0;border-radius:12px;padding:10px 13px;font-weight:700;font-size:14px}
+.btn.go{background:var(--navy);color:#fff}
+.btn.later{background:#eef1f7;color:var(--muted)}
+.hoje .card{padding:20px 18px}
+.hoje .card h3{font-size:23px}
+.hoje .card p{font-size:18px}
+.hoje .num{font-size:13px;font-weight:800;color:var(--c);letter-spacing:1px;margin-bottom:6px}
+.dec{background:var(--card);border-radius:18px;padding:15px;margin-bottom:12px}
+.dec h3{margin:0 0 10px;font-size:16px}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{border:2px solid var(--line);background:#fff;border-radius:12px;padding:11px;text-align:left;font-weight:600;font-size:15px;color:var(--ink)}
+.opt.on{border-color:var(--navy);background:#e9eefc}
+.foot{text-align:center;color:var(--muted);font-size:12px;margin:24px 0 10px}
+.player{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));background:var(--navy);color:#fff;border-radius:20px;padding:10px 12px 12px;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:20}
+.player .now{font-size:13px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0 4px 8px}
+.player .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pb{background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:12px;height:44px;min-width:44px;font-size:18px;font-weight:700}
+.pb.play{background:var(--gold);color:var(--navy);width:58px;height:52px;border-radius:16px;font-size:22px}
+.pb.small{font-size:13px;padding:0 10px}
+select.pb{appearance:none;padding:0 10px;font-size:13px}
+select.pb option{color:#000}
+.veil{position:fixed;inset:0;background:rgba(10,15,30,.5);z-index:30;display:none}
+.veil.on{display:block}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:22px 22px 0 0;padding:18px 18px calc(22px + env(safe-area-inset-bottom));z-index:31;transform:translateY(105%);transition:transform .25s;max-height:86vh;overflow-y:auto}
+.sheet.on{transform:none}
+.sheet h3{margin:0 0 10px;font-size:19px}
+.sheet pre{white-space:pre-wrap;font-family:inherit;font-size:15px;line-height:1.5;background:#f3f5fa;border-radius:14px;padding:14px;margin:0 0 12px}
+.sheet .row{display:flex;flex-direction:column;gap:8px}
+.sheet .btn{padding:14px;font-size:16px;text-align:center;text-decoration:none;display:block}
+.sheet .btn.wa{background:#1faa53;color:#fff}
+.sheet .btn.ln{background:var(--gold);color:var(--navy)}
+.sheet label{display:block;font-weight:600;font-size:14px;margin:12px 0 6px}
+.sheet input{width:100%;padding:12px;border:2px solid var(--line);border-radius:12px;font-size:16px}
+.sheet .note{font-size:13px;color:var(--muted);line-height:1.45;margin-top:10px}
+.toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translate(-50%,-150%);background:var(--ink);color:#fff;padding:12px 16px;border-radius:14px;font-size:14px;z-index:40;transition:transform .3s;max-width:90vw;text-align:center}
+.toast.on{transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div><h1>Painel de Projetos</h1><small id="upd"></small></div>
+    <button class="gear" id="gear" aria-label="Configurações">⚙</button>
+  </div>
+  <div class="prog">
+    <div class="lbl"><span>Ações aprovadas</span><span id="progTxt"></span></div>
+    <div class="bar"><i id="progBar"></i></div>
+  </div>
+  <div class="prazos" id="prazos"></div>
+  <div class="seg"><button id="tHoje" class="on">Hoje</button><button id="tTudo">Painel completo</button></div>
+</header>
+<div class="previa" id="previa" hidden>Prévia no Claude. Tudo funciona aqui, menos a voz do ElevenLabs e o download do backup: esses dois só funcionam no site publicado.</div>
+<main id="main"></main>
+
+<div class="player">
+  <div class="now" id="now">Toque ▶ para ouvir o painel</div>
+  <div class="row">
+    <select class="pb" id="filtro" aria-label="O que ouvir">
+      <option value="tudo">Tudo</option>
+      <option value="travados">Só travados</option>
+      <option value="hoje">Ações de hoje</option>
+    </select>
+    <button class="pb" id="prev" aria-label="Anterior">⏮</button>
+    <button class="pb play" id="play" aria-label="Tocar">▶</button>
+    <button class="pb" id="next" aria-label="Próximo">⏭</button>
+    <button class="pb small" id="vel">1,0x</button>
+  </div>
+</div>
+<audio id="aud" preload="auto"></audio>
+
+<div class="veil" id="veil"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script>
+const D = window.PAINEL;
+const PREVIA = !!window.PREVIA;
+const KEY = "painel-denilson-v1";
+let st = {aprov:{}, adiado:{}, dec:{}, aba:"hoje", vel:1, pin:""};
+try{ Object.assign(st, JSON.parse(localStorage.getItem(KEY)||"{}")); }catch(e){}
+const save = ()=>{ try{localStorage.setItem(KEY, JSON.stringify(st));}catch(e){} };
+const $ = s=>document.querySelector(s);
+const byId = Object.fromEntries(D.projetos.map(p=>[p.id,p]));
+const COR = {noar:"var(--noar)", final:"var(--final)", travado:"var(--travado)", ideia:"var(--ideia)"};
+const NOME = {noar:"No ar", final:"Reta final", travado:"Travado", ideia:"Ideia"};
+const esc = s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt = iso=>{const [y,m,d]=iso.split("-");return d+"/"+m+"/"+y};
+const dias = iso=>Math.ceil((new Date(iso+"T23:59:59")-new Date())/864e5);
+if(PREVIA) $("#previa").hidden=false;
+
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("on"),2600)}
+
+function header(){
+  $("#upd").textContent = "Atualizado em "+fmt(D.atualizado)+" · v"+D.versao;
+  const comAcao = D.projetos.filter(p=>p.acao);
+  const ok = comAcao.filter(p=>st.aprov[p.id]).length;
+  $("#progTxt").textContent = ok+" de "+comAcao.length;
+  $("#progBar").style.width = (comAcao.length? ok/comAcao.length*100:0)+"%";
+  $("#prazos").innerHTML = D.prazos.map(z=>{const n=dias(z.data);
+    return `<div class="prazo"><span>${esc(z.titulo)} · ${fmt(z.data).slice(0,5)}${z.aprox?" (aprox.)":""}</span><b>${n<0?"passou":n===0?"hoje":n+(n===1?" dia":" dias")}</b></div>`}).join("");
+  $("#tHoje").classList.toggle("on", st.aba==="hoje");
+  $("#tTudo").classList.toggle("on", st.aba!=="hoje");
+}
+
+function cardHTML(p, n){
+  const ad = st.adiado[p.id];
+  const flags = [];
+  if(p.urgente) flags.push('<span class="flag red">Urgente</span>');
+  if(p.prazo) flags.push(`<span class="flag">Prazo ${fmt(p.prazo).slice(0,5)} · ${Math.max(0,dias(p.prazo))} dias</span>`);
+  if(p.notebook) flags.push('<span class="flag blue">Dia do notebook</span>');
+  if(ad) flags.push(`<span class="flag">Adiado em ${ad}</span>`);
+  let acts = "";
+  if(p.acao){
+    acts = `<div class="acts">
+      <button class="chk ${st.aprov[p.id]?"on":""}" data-ap="${p.id}"><span class="box">✓</span>Aprovado</button>
+      ${p.agora?`<button class="btn go" data-go="${p.id}">Fazer agora</button>`:""}
+      <button class="btn later" data-ad="${p.id}">${ad?"Retomar":"Adiar"}</button></div>`;
+  }
+  return `<article class="card ${ad?"adiado":""}" id="c-${p.id}" style="--c:${COR[p.estado]}">
+    ${n?`<div class="num">PRIORIDADE ${n}</div>`:""}
+    <div class="hd"><h3>${esc(p.titulo)}</h3><span class="tag">${NOME[p.estado]}</span></div>
+    ${p.resumo?`<p>${esc(p.resumo)}</p>`:""}
+    ${p.motivo?`<p><span class="k">Motivo:</span> ${esc(p.motivo)}</p>`:""}
+    ${p.acao?`<p><span class="k">Ação:</span> ${esc(p.acao)}</p>`:""}
+    ${flags.length?`<div class="flags">${flags.join("")}</div>`:""}
+    ${acts}</article>`;
+}
+
+function render(){
+  header();
+  const m = $("#main");
+  if(st.aba==="hoje"){
+    m.className="hoje";
+    m.innerHTML = `<h2>As 3 prioridades de hoje</h2>` + D.hoje.map((id,i)=>cardHTML(byId[id], i+1)).join("")
+      + `<div class="foot">Veja tudo em “Painel completo”.</div>`;
+    return;
+  }
+  m.className="";
+  const cont = e=>D.projetos.filter(p=>p.estado===e).length;
+  let h = `<div class="stats">${["noar","final","travado","ideia"].map(e=>`<div class="stat" style="border-color:${COR[e]}"><b>${cont(e)}</b><span>${{noar:"No ar",final:"Andamento",travado:"Pendentes",ideia:"Ideias"}[e]}</span></div>`).join("")}</div>`;
+  const ordem = [["final","Em andamento"],["travado","Pendentes"],["noar","Concluídos e no ar"],["ideia","Ideias"]];
+  for(const [e,t] of ordem){
+    const lista = D.projetos.filter(p=>p.estado===e).sort((a,b)=>(!!st.adiado[a.id])-(!!st.adiado[b.id]));
+    h += `<h2><span class="dot" style="background:${COR[e]}"></span>${t}</h2>` + lista.map(p=>cardHTML(p)).join("");
+  }
+  h += `<h2><span class="dot" style="background:var(--navy)"></span>Decisões pendentes</h2>`;
+  h += D.decisoes.map(d=>`<div class="dec" id="d-${d.id}"><h3>${esc(d.pergunta)}</h3><div class="opts">${d.opcoes.map((o,i)=>`<button class="opt ${st.dec[d.id]===i?"on":""}" data-dec="${d.id}" data-i="${i}">${st.dec[d.id]===i?"✓ ":""}${esc(o)}</button>`).join("")}</div></div>`).join("");
+  h += `<div class="foot">Toque de novo numa opção para desmarcar.</div>`;
+  m.innerHTML = h;
+}
+
+document.addEventListener("click", ev=>{
+  const b = ev.target.closest("button"); if(!b) return;
+  if(b.dataset.ap){ const id=b.dataset.ap; st.aprov[id]=!st.aprov[id]; if(!st.aprov[id]) delete st.aprov[id]; save(); render(); if(st.aprov[id]) toast("Aprovado ✓"); }
+  else if(b.dataset.ad){ const id=b.dataset.ad; if(st.adiado[id]) delete st.adiado[id]; else st.adiado[id]=new Date().toLocaleDateString("pt-BR").slice(0,5); save(); render(); }
+  else if(b.dataset.go){ abrirAgora(byId[b.dataset.go]); }
+  else if(b.dataset.dec){ const id=b.dataset.dec, i=+b.dataset.i; if(st.dec[id]===i) delete st.dec[id]; else st.dec[id]=i; save(); render(); }
+});
+$("#tHoje").onclick=()=>{st.aba="hoje";save();render();scrollTo(0,0)};
+$("#tTudo").onclick=()=>{st.aba="tudo";save();render()};
+
+function abrirSheet(html){ $("#sheet").innerHTML=html; $("#sheet").classList.add("on"); $("#veil").classList.add("on"); }
+function fechar(){ $("#sheet").classList.remove("on"); $("#veil").classList.remove("on"); }
+$("#veil").onclick=fechar;
+function abrirAgora(p){
+  const a=p.agora;
+  if(a.tipo==="decisao"){ st.aba="tudo"; save(); render(); setTimeout(()=>document.getElementById("d-"+a.ref)?.scrollIntoView({behavior:"smooth",block:"center"}),50); return; }
+  let dica, botoes = `<button class="btn later" id="copiar">Só copiar o texto</button>`;
+  if(a.para==="claude"){ dica="Mensagem pronta para o Claude. Toque no botão amarelo: o Claude abre com ela já escrita, é só enviar.";
+    botoes = `<a class="btn ln" target="_blank" rel="noopener" href="https://claude.ai/new?q=${encodeURIComponent(a.texto)}">Mandar para o Claude</a>` + botoes; }
+  else if(a.tipo==="whats"){ dica="Mensagem pronta. Toque no botão verde, escolha o contato no WhatsApp e envie.";
+    botoes = `<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(a.texto)}">Enviar no WhatsApp</a>` + botoes; }
+  else if(a.tipo==="link"){ dica="Passo a passo. Toque no botão amarelo para abrir o lugar certo e siga os passos abaixo.";
+    botoes = `<a class="btn ln" target="_blank" rel="noopener" href="${esc(a.url)}">${esc(a.rotulo)}</a>` + botoes; }
+  else dica="Passo a passo para você seguir.";
+  abrirSheet(`<h3>${esc(p.titulo)}</h3><div class="note" style="margin:0 0 10px;font-size:15px;color:var(--ink)">${dica}</div><pre>${esc(a.texto)}</pre><div class="row">${botoes}<button class="btn later" id="fch">Fechar</button></div>`);
+  $("#copiar").onclick=()=>{ try{ navigator.clipboard.writeText(a.texto).then(()=>toast("Texto copiado"),()=>toast("Segure o texto para copiar")); }catch(e){ toast("Segure o texto para copiar"); } };
+  $("#fch").onclick=fechar;
+}
+
+$("#gear").onclick=()=>{
+  abrirSheet(`<h3>Configurações</h3>
+   <label>PIN da voz (só se você cadastrar PAINEL_PIN no Netlify)</label>
+   <input id="pin" type="password" inputmode="numeric" value="${esc(st.pin)}" placeholder="Ex.: 4 a 8 números">
+   <div class="note">A voz é sempre a do ElevenLabs. A voz do navegador não é usada em nenhuma situação.</div>
+   <label>Backup das marcações</label>
+   <div class="row">
+     <button class="btn go" id="bk">Baixar backup</button>
+     <button class="btn later" id="rs">Restaurar backup</button>
+     <button class="btn later" id="lc">Limpar áudios guardados</button>
+   </div>
+   <div class="note">Último backup: ${st.ultimoBackup||"nunca"}</div>
+   <input type="file" id="arq" accept="application/json" hidden>
+   <div class="row" style="margin-top:14px"><button class="btn go" id="okc">Salvar e fechar</button></div>`);
+  $("#okc").onclick=()=>{ st.pin=$("#pin").value.trim(); save(); fechar(); toast("Salvo"); };
+  $("#bk").onclick=()=>{ if(PREVIA){ toast("Na prévia não dá para baixar. No site publicado funciona."); return; }
+    st.ultimoBackup=new Date().toLocaleString("pt-BR"); save();
+    const b=new Blob([JSON.stringify(st,null,1)],{type:"application/json"}); const a=document.createElement("a");
+    a.href=URL.createObjectURL(b); a.download="painel-backup-"+new Date().toISOString().slice(0,10)+".json"; a.click(); };
+  $("#rs").onclick=()=>$("#arq").click();
+  $("#arq").onchange=e=>{ const f=e.target.files[0]; if(!f) return; f.text().then(t=>{ try{ Object.assign(st, JSON.parse(t)); save(); fechar(); render(); toast("Backup restaurado"); }catch(x){ toast("Arquivo inválido"); } }); };
+  $("#lc").onclick=async()=>{ try{ if(window.caches) await caches.delete("painel-audio"); }catch(e){} toast("Áudios apagados; serão gerados de novo"); };
+};
+
+// ---------- VOZ ELEVENLABS ----------
+const aud = $("#aud");
+let fila=[], pos=0, tocando=false;
+const hash = s=>{let h=5381;for(const c of s)h=((h<<5)+h+c.codePointAt(0))|0;return (h>>>0).toString(36)};
+function montarFila(){
+  const f=$("#filtro").value;
+  if(f==="hoje") return D.hoje.map(id=>byId[id]);
+  if(f==="travados") return D.projetos.filter(p=>p.estado==="travado");
+  const ord=["final","travado","noar","ideia"];
+  return [{id:"resumo",titulo:"Resumo do painel",fala:D.resumoFala}, ...ord.flatMap(e=>D.projetos.filter(p=>p.estado===e))];
+}
+async function obterAudio(item){
+  if(PREVIA) throw new Error("previa");
+  const chave = "/voz/"+item.id+"-"+hash(item.fala);
+  const cache = window.caches ? await caches.open("painel-audio") : null;
+  if(cache){ const r = await cache.match(chave); if(r) return URL.createObjectURL(await r.blob()); }
+  try{ const r = await fetch("audio/"+item.id+".mp3"); if(r.ok && (r.headers.get("content-type")||"").includes("audio")){ const b=await r.blob(); return URL.createObjectURL(b); } }catch(e){}
+  const r = await fetch("/.netlify/functions/tts",{method:"POST",headers:{"Content-Type":"application/json","x-painel-pin":st.pin||""},body:JSON.stringify({text:item.fala})});
+  if(r.status===401) throw new Error("pin");
+  if(!r.ok) throw new Error("off");
+  const b = await r.blob();
+  if(cache) await cache.put(chave, new Response(b,{headers:{"Content-Type":"audio/mpeg"}}));
+  return URL.createObjectURL(b);
+}
+function marcar(item){
+  document.querySelectorAll(".card.reading").forEach(c=>c.classList.remove("reading"));
+  const el=document.getElementById("c-"+item.id);
+  if(el){ el.classList.add("reading"); el.scrollIntoView({behavior:"smooth",block:"center"}); }
+  $("#now").textContent = "🔊 "+(pos+1)+"/"+fila.length+" · "+item.titulo;
+  try{ if("mediaSession" in navigator) navigator.mediaSession.metadata = new MediaMetadata({title:item.titulo, artist:"Painel de Projetos", artwork:[{src:"icon.svg",sizes:"any",type:"image/svg+xml"}]}); }catch(e){}
+}
+let timerPrevia=null;
+async function tocar(i){
+  clearTimeout(timerPrevia);
+  if(i<0||i>=fila.length){ parar(); $("#now").textContent="Fim da leitura ✓"; return; }
+  pos=i; const item=fila[i];
+  if(st.aba==="hoje" && $("#filtro").value!=="hoje" && !document.getElementById("c-"+item.id) && item.id!=="resumo"){ st.aba="tudo"; render(); }
+  marcar(item); $("#now").textContent += " (preparando voz…)";
+  try{
+    aud.src = await obterAudio(item); aud.playbackRate=st.vel; await aud.play();
+    tocando=true; $("#play").textContent="⏸"; marcar(item);
+    if(fila[i+1]) obterAudio(fila[i+1]).catch(()=>{});
+  }catch(e){
+    if(e.message==="previa"){
+      // Simula a leitura: destaca um cartão de cada vez, sem som.
+      tocando=true; $("#play").textContent="⏸"; marcar(item);
+      $("#now").textContent += " · sem som na prévia";
+      timerPrevia=setTimeout(()=>{ if(tocando) tocar(pos+1); }, Math.max(2500, item.fala.length*45/st.vel));
+      return;
+    }
+    parar();
+    if(e.message==="pin") toast("PIN da voz incorreto. Ajuste na engrenagem ⚙");
+    else { $("#now").textContent="Voz ElevenLabs ainda não ativada neste site"; toast("Voz desligada: falta cadastrar a chave do ElevenLabs no Netlify. Veja o cartão “Painel de Projetos — voz”."); }
+  }
+}
+function parar(){ clearTimeout(timerPrevia); aud.pause(); tocando=false; $("#play").textContent="▶"; }
+aud.onended=()=>tocar(pos+1);
+$("#play").onclick=()=>{
+  if(tocando){ parar(); return; }
+  if(!PREVIA && aud.src && !aud.ended && aud.currentTime>0){ aud.play(); tocando=true; $("#play").textContent="⏸"; return; }
+  if(!fila.length) fila=montarFila();
+  tocar(PREVIA?pos:0);
+};
+$("#next").onclick=()=>{ if(!fila.length) fila=montarFila(); tocar(pos+1); };
+$("#prev").onclick=()=>{ if(!fila.length) fila=montarFila(); tocar(Math.max(0,pos-1)); };
+$("#filtro").onchange=()=>{ parar(); aud.removeAttribute("src"); fila=montarFila(); pos=0; $("#now").textContent="Toque ▶ para ouvir"; };
+const VELS=[0.9,1,1.15,1.3];
+const velTxt=()=>$("#vel").textContent=String(st.vel).replace(".",",")+"x";
+$("#vel").onclick=()=>{ st.vel=VELS[(VELS.indexOf(st.vel)+1)%VELS.length]; aud.playbackRate=st.vel; save(); velTxt(); };
+try{ if("mediaSession" in navigator){
+  navigator.mediaSession.setActionHandler("play",()=>$("#play").click());
+  navigator.mediaSession.setActionHandler("pause",()=>parar());
+  navigator.mediaSession.setActionHandler("nexttrack",()=>$("#next").click());
+  navigator.mediaSession.setActionHandler("previoustrack",()=>$("#prev").click());
+} }catch(e){}
+velTxt(); render();
+if(!PREVIA && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
