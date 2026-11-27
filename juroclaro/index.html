@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#142029">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Juro Claro">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>Juro Claro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #eef1f4;
+  --surface: #ffffff;
+  --ink: #142029;
+  --muted: #5c6a77;
+  --line: #dbe1e7;
+  --accent: #0b7a68;
+  --accent-soft: #d8efe9;
+  --hero: #142029;
+  --hero-ink: #eef3f6;
+  --hero-muted: #9fb0bd;
+  --hero-accent: #5fe0c4;
+  --good: #1d8a55;
+  --bad: #c23b2e;
+  --font-display: "Sora", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1116; --surface: #151c23; --ink: #e6ebef; --muted: #93a1ad; --line: #26313b;
+    --accent: #43c9ae; --accent-soft: #133a33; --hero: #1c2832; --hero-ink: #eef3f6;
+    --hero-muted: #93a6b4; --hero-accent: #5fe0c4; --good: #4ccb8a; --bad: #f07a6c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1116; --surface: #151c23; --ink: #e6ebef; --muted: #93a1ad; --line: #26313b;
+  --accent: #43c9ae; --accent-soft: #133a33; --hero: #1c2832; --hero-ink: #eef3f6;
+  --hero-muted: #93a6b4; --hero-accent: #5fe0c4; --good: #4ccb8a; --bad: #f07a6c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { display: flex; flex-direction: column; background: var(--bg); color: var(--ink); font-family: var(--font-body); line-height: 1.45; -webkit-tap-highlight-color: transparent; }
+button { font: inherit; color: inherit; }
+button:focus-visible, input:focus-visible, a:focus-visible, label.switch:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.appbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: var(--surface); border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.logo { width: 36px; height: 36px; flex: none; border-radius: 10px; background: var(--hero); color: var(--hero-accent); display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+.brand h1 { margin: 0; font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; letter-spacing: -.01em; }
+.brand p { margin: 0; font-size: .8rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.iconbtn { position: relative; flex: none; display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); cursor: pointer; font-size: .85rem; font-weight: 600; }
+.iconbtn svg { width: 18px; height: 18px; }
+.iconbtn[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.badge { min-width: 20px; padding: 0 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: .72rem; line-height: 20px; text-align: center; font-variant-numeric: tabular-nums; }
+.badge:empty { display: none; }
+
+main { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.wrap { max-width: 520px; margin: 0 auto; padding: 16px 16px 28px; display: flex; flex-direction: column; gap: 14px; }
+.hint { margin: 0; font-size: .9rem; color: var(--muted); }
+.hint b { color: var(--accent); font-weight: 600; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+.fields { overflow: hidden; }
+.frow { padding: 10px 14px 12px; border-top: 1px solid var(--line); position: relative; }
+.frow:first-child { border-top: 0; }
+.frow label { display: flex; gap: 6px; align-items: baseline; font-size: .8rem; color: var(--muted); font-weight: 500; }
+.opt { font-size: .72rem; opacity: .8; }
+.fin { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+.unit { font-family: var(--font-display); font-size: .85rem; color: var(--muted); min-width: 2.4em; }
+.fin input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink); font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; padding: 2px 0; font-variant-numeric: tabular-nums; }
+.fin input::placeholder { color: var(--muted); opacity: .5; font-weight: 500; }
+.fin input:focus { outline: none; }
+.frow:focus-within:not(.is-target) { background: color-mix(in srgb, var(--accent-soft) 45%, transparent); }
+.chip { flex: none; border: 1px solid var(--line); background: var(--bg); color: var(--muted); border-radius: 999px; padding: 4px 10px; font-size: .75rem; font-weight: 600; cursor: pointer; }
+.frow.is-target { background: var(--accent-soft); }
+.frow.is-target::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--accent); }
+.frow.is-target input { color: var(--accent); }
+.frow.is-target .chip { background: var(--accent); border-color: var(--accent); color: #fff; }
+.frow.bad { box-shadow: inset 4px 0 0 var(--bad); }
+.frow.bad label { color: var(--bad); }
+
+.switch { display: flex; align-items: center; gap: 12px; padding: 12px 14px; cursor: pointer; font-size: .92rem; }
+.switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.track { flex: none; width: 42px; height: 24px; border-radius: 999px; background: var(--line); position: relative; transition: background .15s; }
+.track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform .15s; }
+.switch input:checked + .track { background: var(--accent); }
+.switch input:checked + .track::after { transform: translateX(18px); }
+
+.result { background: var(--hero); color: var(--hero-ink); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 6px; }
+.r-label { margin: 0; font-size: .78rem; text-transform: uppercase; letter-spacing: .07em; color: var(--hero-muted); font-weight: 600; }
+.r-value { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 2.1rem; line-height: 1.1; color: var(--hero-accent); letter-spacing: -.02em; font-variant-numeric: tabular-nums; word-break: break-word; }
+.result.tone-bad .r-value { color: #ff9b8e; }
+.result.is-error .r-value { font-family: var(--font-body); font-size: 1.1rem; font-weight: 600; color: var(--hero-ink); letter-spacing: 0; }
+.r-msg { margin: 2px 0 0; font-size: .9rem; color: var(--hero-ink); opacity: .9; }
+.r-msg:empty { display: none; }
+.r-lines { margin: 8px 0 0; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.14); display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; font-size: .9rem; }
+.r-lines:empty { display: none; }
+.r-lines dt { color: var(--hero-muted); }
+.r-lines dd { margin: 0; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.actions { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 600; font-size: .9rem; cursor: pointer; text-decoration: none; }
+.btn svg { width: 18px; height: 18px; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn[disabled], .btn.off { opacity: .45; pointer-events: none; }
+
+.chart { margin: 0; padding: 14px; }
+.chart figcaption { font-size: .82rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.chart .ax { font-size: 9px; fill: var(--muted); font-family: var(--font-body); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .78rem; color: var(--muted); margin-top: 6px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+details.card { padding: 0; }
+details summary { padding: 14px; cursor: pointer; font-weight: 600; font-size: .9rem; list-style: none; display: flex; justify-content: space-between; }
+details summary::after { content: "Ver"; color: var(--accent); }
+details[open] summary::after { content: "Fechar"; }
+.tbl { overflow-x: auto; padding: 0 6px 10px; }
+.tbl table { width: 100%; border-collapse: collapse; font-size: .82rem; font-variant-numeric: tabular-nums; }
+.tbl th, .tbl td { padding: 6px 8px; text-align: right; border-top: 1px solid var(--line); white-space: nowrap; }
+.tbl th { color: var(--muted); font-weight: 600; border-top: 0; }
+.tbl th:first-child, .tbl td:first-child { text-align: left; }
+
+.hist-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.hist-head h2 { margin: 0; font-family: var(--font-display); font-size: 1.2rem; }
+.linkbtn { border: 0; background: none; color: var(--bad); font-weight: 600; font-size: .85rem; cursor: pointer; padding: 6px 0; }
+.hlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.hitem { padding: 12px 14px; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; }
+.htool { font-size: .72rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; }
+.hdate { font-size: .75rem; color: var(--muted); text-align: right; }
+.hval { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.hsub { grid-column: 1 / -1; font-size: .82rem; color: var(--muted); }
+.hbtns { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 6px; }
+.hbtns .btn { padding: 8px 12px; font-size: .82rem; }
+.empty { padding: 28px 18px; text-align: center; color: var(--muted); }
+.empty strong { display: block; color: var(--ink); font-family: var(--font-display); margin-bottom: 4px; }
+
+.tabbar { display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface); border-top: 1px solid var(--line); padding: 6px 4px 8px; }
+.tab { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 2px; border: 0; background: none; color: var(--muted); font-size: .7rem; font-weight: 600; cursor: pointer; border-radius: 10px; }
+.tab svg { width: 22px; height: 22px; }
+.tab[aria-selected="true"] { color: var(--accent); }
+.tab[aria-selected="true"] svg { background: var(--accent-soft); border-radius: 999px; padding: 2px 10px; width: 44px; box-sizing: content-box; height: 20px; }
+
+.toast { position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%) translateY(10px); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-size: .88rem; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+@media (prefers-reduced-motion: reduce) { .toast, .track, .track::after { transition: none; } }
+</style>
+</head>
+<body>
+<header class="appbar">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">%</span>
+    <div>
+      <h1>Juro Claro</h1>
+      <p id="toolIntro"></p>
+    </div>
+  </div>
+  <button class="iconbtn" id="btnHist" aria-pressed="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
+    Histórico <span class="badge" id="histCount"></span>
+  </button>
+</header>
+
+<main id="main"><div class="wrap" id="view"></div></main>
+
+<nav class="tabbar" id="tabbar" role="tablist" aria-label="Ferramentas"></nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script id="math">
+const pw = Math.pow;
+function annuity(i, n) { return i === 0 ? n : (1 - pw(1 + i, -n)) / i; }
+function fvFactor(i, n) { return i === 0 ? n : (pw(1 + i, n) - 1) / i; }
+function bisect(f, lo, hi) {
+  let flo = f(lo);
+  const fhi = f(hi);
+  if (!(flo * fhi <= 0)) return null;
+  for (let k = 0; k < 200; k++) {
+    const mid = (lo + hi) / 2, fm = f(mid);
+    if (flo * fm <= 0) hi = mid; else { lo = mid; flo = fm; }
+  }
+  return (lo + hi) / 2;
+}
+function parseNum(s) {
+  s = String(s == null ? "" : s).trim().replace(/R\$|\s|%/g, "");
+  if (!s) return null;
+  if (s.indexOf(",") >= 0) s = s.replace(/\./g, "").replace(",", ".");
+  else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
+  const v = Number(s);
+  return Number.isFinite(v) ? v : NaN;
+}
+const err = m => ({ error: m });
+const near = x => Math.abs(x - Math.round(x)) < 1e-6 ? Math.round(x) : x;
+
+function solveParcelar(v, t) {
+  const o = Object.assign({}, v);
+  const e = v.entrada || 0;
+  if (t !== "valor" && v.valor <= e) return err("A entrada precisa ser menor que o valor à vista.");
+  const F = t === "valor" ? null : v.valor - e;
+  if (t === "valor") o.valor = v.parcela * annuity(v.i, v.n) + e;
+  else if (t === "parcela") o.parcela = F / annuity(v.i, v.n);
+  else if (t === "n") {
+    if (v.parcela <= 0) return err("Informe um valor de parcela maior que zero.");
+    if (v.i === 0) o.n = F / v.parcela;
+    else {
+      const x = 1 - F * v.i / v.parcela;
+      if (x <= 0) return err("Com essa taxa, a parcela não cobre nem os juros. Aumente a parcela.");
+      o.n = -Math.log(x) / Math.log(1 + v.i);
+    }
+    o.n = near(o.n);
+  } else {
+    if (v.parcela * v.n < F - 1e-6) return err("A soma das parcelas é menor que o valor financiado. Confira os números.");
+    if (Math.abs(v.parcela * v.n - F) < 1e-6) o.i = 0;
+    else {
+      const r = bisect(i => v.parcela * annuity(i, v.n) - F, 1e-9, 10);
+      if (r === null) return err("Não consegui achar a taxa. Confira os números.");
+      o.i = r;
+    }
+  }
+  o.financiado = o.valor - e;
+  o.total = e + o.parcela * o.n;
+  o.juros = o.total - o.valor;
+  return o;
+}
+
+function solveFuturo(v, t) {
+  const o = Object.assign({}, v);
+  if (t === "fv") o.fv = v.pv * pw(1 + v.i, v.n) + v.pmt * fvFactor(v.i, v.n);
+  else if (t === "pv") {
+    o.pv = (v.fv - v.pmt * fvFactor(v.i, v.n)) / pw(1 + v.i, v.n);
+    if (o.pv < 0) return err("Só com os depósitos mensais você já passa desse valor. Não precisa de valor inicial.");
+  } else if (t === "pmt") {
+    o.pmt = (v.fv - v.pv * pw(1 + v.i, v.n)) / fvFactor(v.i, v.n);
+    if (o.pmt < 0) return err("O valor que você já tem chega lá sozinho. Não precisa depositar por mês.");
+  } else if (t === "n") {
+    if (v.fv <= v.pv) return err("O valor futuro precisa ser maior que o valor de hoje.");
+    if (v.i === 0) {
+      if (v.pmt <= 0) return err("Sem rendimento e sem depósito mensal, o valor nunca é atingido.");
+      o.n = (v.fv - v.pv) / v.pmt;
+    } else {
+      const num = v.fv * v.i + v.pmt, den = v.pv * v.i + v.pmt;
+      if (den <= 0) return err("Sem valor inicial e sem depósito mensal, o valor nunca é atingido.");
+      o.n = Math.log(num / den) / Math.log(1 + v.i);
+    }
+    o.n = near(o.n);
+  } else {
+    const base = v.pv + v.pmt * v.n;
+    if (base <= 0) return err("Informe um valor de hoje ou um depósito mensal.");
+    if (v.fv < base - 1e-6) return err("O valor futuro é menor do que você mesmo colocaria. O rendimento seria negativo.");
+    if (Math.abs(v.fv - base) < 1e-6) o.i = 0;
+    else {
+      const r = bisect(i => v.pv * pw(1 + i, v.n) + v.pmt * fvFactor(i, v.n) - v.fv, 1e-9, 5);
+      if (r === null) return err("Não consegui achar o rendimento. Confira os números.");
+      o.i = r;
+    }
+  }
+  o.colocado = o.pv + o.pmt * o.n;
+  o.rendimento = o.fv - o.colocado;
+  return o;
+}
+
+function solveAvista(v, tg) {
+  const o = Object.assign({}, v);
+  if (v.preco <= 0) return err("Informe o preço a prazo.");
+  if (v.desc >= 1) return err("O desconto precisa ser menor que 100%.");
+  if (tg.ato && v.n === 1) return err("Com 1 parcela paga no ato, já é pagamento à vista.");
+  o.avista = v.preco * (1 - v.desc);
+  o.parcela = v.preco / v.n;
+  const pvPar = i => tg.ato ? o.parcela * (1 + annuity(i, v.n - 1)) : o.parcela * annuity(i, v.n);
+  o.ie = v.desc === 0 ? 0 : bisect(i => pvPar(i) - o.avista, 1e-9, 10);
+  o.hoje = pvPar(v.rend);
+  o.diff = o.hoje - o.avista;
+  return o;
+}
+
+function solveTaxas(v, t) {
+  const o = Object.assign({}, v);
+  if (t === "ia") o.ia = pw(1 + v.im, 12) - 1;
+  else o.im = pw(1 + v.ia, 1 / 12) - 1;
+  o.dia = pw(1 + o.im, 1 / 30) - 1;
+  o.tri = pw(1 + o.im, 3) - 1;
+  o.sem = pw(1 + o.im, 6) - 1;
+  o.simples = o.im * 12;
+  return o;
+}
+
+function solveMargem(v, t) {
+  const o = Object.assign({}, v);
+  const d = v.desc || 0;
+  if (d >= 1) return err("O desconto precisa ser menor que 100%.");
+  if (t === "preco") {
+    if (v.margem >= 1) return err("A margem sobre a venda precisa ser menor que 100%.");
+    o.preco = v.custo / (1 - v.margem);
+  } else if (t === "custo") {
+    if (v.margem >= 1) return err("A margem sobre a venda precisa ser menor que 100%.");
+    o.custo = v.preco * (1 - v.margem);
+  } else {
+    if (v.preco <= 0) return err("Informe um preço de venda maior que zero.");
+    o.margem = (v.preco - v.custo) / v.preco;
+  }
+  o.lucro = o.preco - o.custo;
+  o.markup = o.custo > 0 ? o.lucro / o.custo : null;
+  if (d > 0) {
+    o.precoD = o.preco * (1 - d);
+    o.lucroD = o.precoD - o.custo;
+    o.margemD = o.precoD > 0 ? o.lucroD / o.precoD : null;
+  }
+  return o;
+}
+</script>
+
+<script>
+const nf2 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const nf1 = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 });
+const brl = x => "R$ " + nf2.format(x);
+const pct = x => nf2.format(x * 100) + "%";
+const meses = (x, um, varios) => nf1.format(x) + " " + (Math.abs(x - 1) < 1e-9 ? um : varios);
+function inputDisplay(f, x) {
+  if (x === null || x === undefined || !Number.isFinite(x)) return "";
+  if (f.type === "money") return nf2.format(x);
+  if (f.type === "pct") return nf2.format(x * 100);
+  return Number.isInteger(x) ? String(x) : nf1.format(x);
+}
+function shareDisplay(f, x) {
+  if (f.type === "money") return brl(x);
+  if (f.type === "pct") return pct(x);
+  return Number.isInteger(x) ? String(x) : nf1.format(x);
+}
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+};
+const KEY_HIST = "juroclaro.historico";
+const KEY_DRAFT = "juroclaro.rascunho";
+
+const svg = p => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + "</svg>";
+const ICON = {
+  parcelar: svg('<rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="7" y1="15" x2="10" y2="15"/>'),
+  avista: svg('<path d="M12 3v18"/><path d="M7 21h10"/><path d="M5 7h14"/><path d="M5 7l-3 6a3 3 0 0 0 6 0z"/><path d="M19 7l-3 6a3 3 0 0 0 6 0z"/>'),
+  futuro: svg('<polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/>'),
+  taxas: svg('<line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>'),
+  margem: svg('<path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>'),
+  save: svg('<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>'),
+  copy: svg('<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>'),
+  share: svg('<path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.4A8.4 8.4 0 1 1 21 11.5z"/>')
+};
+
+const TOOLS = {
+  parcelar: {
+    name: "Parcelar", intro: "Venda a prazo, financiamento, consórcio",
+    defaultTarget: "i",
+    fields: [
+      { id: "valor", label: "Valor à vista", type: "money", def: "12.000,00" },
+      { id: "entrada", label: "Entrada", type: "money", def: "", optional: true },
+      { id: "parcela", label: "Valor da parcela", type: "money", def: "2.150,00" },
+      { id: "n", label: "Número de parcelas", type: "int", unit: "x", def: "6" },
+      { id: "i", label: "Juros ao mês", type: "pct", def: "2,00" }
+    ],
+    solve(v, t) {
+      const o = solveParcelar(v, t);
+      if (o.error) return o;
+      const head = { valor: "Valor à vista", parcela: "Valor da parcela", n: "Número de parcelas", i: "Juros ao mês" }[t];
+      const value = t === "i" ? pct(o.i) : t === "n" ? meses(o.n, "parcela", "parcelas") : brl(o[t]);
+      const lines = [];
+      if (o.entrada > 0) lines.push(["Valor financiado", brl(o.financiado)]);
+      lines.push(["Total pago", brl(o.total)], ["Juros pagos", brl(o.juros)]);
+      if (t !== "i") lines.push(["Juros ao mês", pct(o.i)]);
+      lines.push(["Equivale ao ano", pct(pw(1 + o.i, 12) - 1)]);
+      let msg = "";
+      if (t === "i") msg = o.i === 0 ? "Sem juros: o total pago é igual ao valor à vista." : "É o custo real do parcelamento. Compare com o desconto à vista na aba À vista?.";
+      if (t === "n" && !Number.isInteger(o.n)) msg = "Na prática, " + Math.ceil(o.n) + " parcelas, com a última menor.";
+      return { vals: o, label: head, value, lines, msg, extra: tabelaPrice(o) };
+    }
+  },
+  avista: {
+    name: "À vista?", intro: "Desconto à vista ou parcelado: qual compensa",
+    defaultTarget: null,
+    toggles: [{ id: "ato", label: "1ª parcela paga no ato da compra" }],
+    fields: [
+      { id: "preco", label: "Preço a prazo (total)", type: "money", def: "12.000,00" },
+      { id: "n", label: "Em quantas vezes", type: "int", unit: "x", def: "6" },
+      { id: "desc", label: "Desconto para pagar à vista", type: "pct", def: "5,00" },
+      { id: "rend", label: "Quanto o dinheiro rende ao mês", type: "pct", def: "1,00" }
+    ],
+    solve(v, t, tg) {
+      const o = solveAvista(v, tg);
+      if (o.error) return o;
+      const avista = o.diff > 0.005;
+      const lines = [
+        ["Preço à vista", brl(o.avista)],
+        [v.n + "x de", brl(o.parcela)],
+        ["Juros embutidos ao mês", o.ie === null ? "acima de 1000%" : pct(o.ie)],
+        ["Equivale ao ano", o.ie === null ? "—" : pct(pw(1 + o.ie, 12) - 1)],
+        ["Parcelas em dinheiro de hoje", brl(o.hoje)]
+      ];
+      const msg = avista
+        ? "Pagando à vista você economiza " + brl(o.diff) + " em dinheiro de hoje. O desconto rende mais que a aplicação."
+        : o.diff < -0.005
+          ? "Parcelando e deixando o dinheiro rendendo a " + pct(v.rend) + " ao mês, você fica " + brl(-o.diff) + " à frente."
+          : "Empate: tanto faz pagar à vista ou parcelar.";
+      return { vals: o, label: "Melhor opção", value: avista ? "Pague à vista" : (o.diff < -0.005 ? "Vale parcelar" : "Empate"), tone: null, lines, msg };
+    }
+  },
+  futuro: {
+    name: "Valor futuro", intro: "Quanto o dinheiro vale lá na frente",
+    defaultTarget: "fv",
+    fields: [
+      { id: "pv", label: "Valor que tenho hoje", type: "money", def: "5.000,00" },
+      { id: "pmt", label: "Depósito por mês", type: "money", def: "500,00" },
+      { id: "i", label: "Rendimento ao mês", type: "pct", def: "1,00" },
+      { id: "n", label: "Prazo", type: "int", unit: "meses", def: "60", allowZeroTarget: true },
+      { id: "fv", label: "Valor futuro", type: "money", def: "" }
+    ],
+    solve(v, t) {
+      const o = solveFuturo(v, t);
+      if (o.error) return o;
+      const head = { fv: "Valor futuro", pv: "Valor que você precisa ter hoje", pmt: "Depósito por mês", n: "Prazo", i: "Rendimento ao mês" }[t];
+      const value = t === "i" ? pct(o.i) : t === "n" ? meses(o.n, "mês", "meses") : brl(o[t]);
+      const lines = [
+        ["Você coloca", brl(o.colocado)],
+        ["Os juros põem", brl(o.rendimento)]
+      ];
+      if (t !== "i") lines.push(["Rendimento ao mês", pct(o.i)]);
+      lines.push(["Equivale ao ano", pct(pw(1 + o.i, 12) - 1)]);
+      if (o.n >= 12 && t !== "n") lines.push(["Prazo em anos", nf1.format(o.n / 12)]);
+      let msg = "";
+      if (t === "n") msg = "Cerca de " + nf1.format(o.n / 12) + " anos" + (Number.isInteger(o.n) ? "." : ". Na prática, " + Math.ceil(o.n) + " meses.");
+      else if (o.rendimento > 0 && o.colocado > 0) msg = "Os juros fazem " + nf1.format(o.rendimento / o.fv * 100) + "% do valor final.";
+      return { vals: o, label: head, value, lines, msg, extra: graficoFuturo(o) };
+    }
+  },
+  taxas: {
+    name: "Taxas", intro: "Converter juros ao mês e ao ano",
+    defaultTarget: "ia",
+    fields: [
+      { id: "im", label: "Taxa ao mês", type: "pct", def: "2,00" },
+      { id: "ia", label: "Taxa ao ano", type: "pct", def: "" }
+    ],
+    solve(v, t) {
+      const o = solveTaxas(v, t);
+      const head = t === "ia" ? "Taxa ao ano" : "Taxa ao mês";
+      const lines = [
+        ["Ao dia (mês de 30 dias)", nf2.format(o.dia * 100) + "%"],
+        ["Ao trimestre", pct(o.tri)],
+        ["Ao semestre", pct(o.sem)],
+        ["Se fosse juros simples, ao ano", pct(o.simples)]
+      ];
+      const msg = "Loja anuncia juros simples (" + pct(o.im) + " × 12). O custo real, com juros sobre juros, é " + pct(o.ia) + " ao ano.";
+      return { vals: o, label: head, value: pct(o[t]), lines, msg };
+    }
+  },
+  margem: {
+    name: "Margem", intro: "Preço, custo, margem e desconto",
+    defaultTarget: "preco",
+    fields: [
+      { id: "custo", label: "Custo", type: "money", def: "8.000,00" },
+      { id: "preco", label: "Preço de venda", type: "money", def: "" },
+      { id: "margem", label: "Margem sobre a venda", type: "pct", def: "25,00" },
+      { id: "desc", label: "Desconto que o cliente pede", type: "pct", def: "", optional: true }
+    ],
+    solve(v, t) {
+      const o = solveMargem(v, t);
+      if (o.error) return o;
+      const head = { preco: "Preço de venda", custo: "Custo máximo", margem: "Margem sobre a venda" }[t];
+      const value = t === "margem" ? pct(o.margem) : brl(o[t]);
+      const lines = [["Lucro por venda", brl(o.lucro)]];
+      if (o.markup !== null) lines.push(["Markup sobre o custo", pct(o.markup)]);
+      if (o.margem > 0) lines.push(["Desconto máximo sem prejuízo", pct(o.margem)]);
+      let msg = "", tone = o.margem < 0 ? "bad" : null;
+      if (o.precoD !== undefined) {
+        lines.push(["Preço com desconto", brl(o.precoD)], ["Lucro com desconto", brl(o.lucroD)]);
+        if (o.margemD !== null) lines.push(["Margem com desconto", pct(o.margemD)]);
+        msg = o.lucroD < 0 ? "Com esse desconto você vende abaixo do custo." : "Com o desconto, a margem cai de " + pct(o.margem) + " para " + pct(o.margemD) + ".";
+        if (o.lucroD < 0) tone = "bad";
+      } else if (o.margem < 0) msg = "Esse preço fica abaixo do custo.";
+      return { vals: o, label: head, value, lines, msg, tone };
+    }
+  }
+};
+const ORDER = ["parcelar", "avista", "futuro", "taxas", "margem"];
+
+function tabelaPrice(o) {
+  if (!Number.isInteger(o.n) || o.n < 1 || o.n > 120 || o.i === 0 && o.parcela * o.n === 0) return "";
+  let saldo = o.financiado, rows = "";
+  for (let k = 1; k <= o.n; k++) {
+    const j = saldo * o.i, a = o.parcela - j;
+    saldo = k === o.n ? 0 : saldo - a;
+    rows += "<tr><td>" + k + "</td><td>" + nf2.format(o.parcela) + "</td><td>" + nf2.format(j) + "</td><td>" + nf2.format(a) + "</td><td>" + nf2.format(Math.max(saldo, 0)) + "</td></tr>";
+  }
+  return '<details class="card"><summary>Tabela das parcelas</summary><div class="tbl"><table><thead><tr><th>Nº</th><th>Parcela</th><th>Juros</th><th>Amortiza</th><th>Saldo</th></tr></thead><tbody>' + rows + "</tbody></table></div></details>";
+}
+function graficoFuturo(o) {
+  const N = Math.min(Math.ceil(o.n), 600);
+  if (!(N >= 1)) return "";
+  const bal = [], put = [];
+  for (let k = 0; k <= N; k++) {
+    bal.push(o.pv * pw(1 + o.i, k) + o.pmt * fvFactor(o.i, k));
+    put.push(o.pv + o.pmt * k);
+  }
+  const max = Math.max(bal[N], put[N], 1);
+  const W = 320, H = 150, top = 22, bot = 22;
+  const x = k => 6 + k / N * (W - 12);
+  const y = v => top + (1 - v / max) * (H - top - bot);
+  const line = arr => arr.map((v, k) => (k ? "L" : "M") + x(k).toFixed(1) + " " + y(v).toFixed(1)).join(" ");
+  const area = line(bal) + " L" + x(N).toFixed(1) + " " + y(0).toFixed(1) + " L" + x(0).toFixed(1) + " " + y(0).toFixed(1) + " Z";
+  const base = y(0).toFixed(1);
+  return '<figure class="card chart"><figcaption>Como o saldo cresce</figcaption>' +
+    '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Gráfico do saldo ao longo de ' + N + ' meses">' +
+    '<line x1="6" x2="' + (W - 6) + '" y1="' + y(max / 2).toFixed(1) + '" y2="' + y(max / 2).toFixed(1) + '" stroke="var(--line)" stroke-dasharray="3 4"/>' +
+    '<line x1="6" x2="' + (W - 6) + '" y1="' + base + '" y2="' + base + '" stroke="var(--line)"/>' +
+    '<path d="' + area + '" fill="var(--accent)" fill-opacity=".16"/>' +
+    '<path d="' + line(bal) + '" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linejoin="round"/>' +
+    '<path d="' + line(put) + '" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-dasharray="4 3"/>' +
+    '<circle cx="' + x(N).toFixed(1) + '" cy="' + y(bal[N]).toFixed(1) + '" r="4" fill="var(--accent)"/>' +
+    '<text class="ax" x="' + (W - 6) + '" y="' + Math.max(y(bal[N]) - 9, 10).toFixed(1) + '" text-anchor="end" style="fill:var(--ink);font-weight:600">' + brl(bal[N]) + "</text>" +
+    '<text class="ax" x="6" y="' + (H - 6) + '">hoje</text>' +
+    '<text class="ax" x="' + (W - 6) + '" y="' + (H - 6) + '" text-anchor="end">mês ' + N + "</text>" +
+    "</svg>" +
+    '<div class="legend"><span><i style="background:var(--accent)"></i>Saldo com rendimento</span><span><i style="background:var(--muted)"></i>Só o que você colocou</span></div></figure>';
+}
+
+const draft = store.get(KEY_DRAFT, {});
+const state = { tool: draft.tool && TOOLS[draft.tool] ? draft.tool : "parcelar", view: "tool", targets: {}, inputs: {}, toggles: {} };
+ORDER.forEach(id => {
+  const tl = TOOLS[id], d = (draft.tools || {})[id] || {};
+  state.targets[id] = d.target !== undefined ? d.target : tl.defaultTarget;
+  state.inputs[id] = {};
+  tl.fields.forEach(f => { state.inputs[id][f.id] = d.inputs && d.inputs[f.id] !== undefined ? d.inputs[f.id] : f.def; });
+  state.toggles[id] = Object.assign({}, d.toggles || {});
+});
+let last = null;
+let history = store.get(KEY_HIST, []);
+if (!Array.isArray(history)) history = [];
+
+function saveDraft() {
+  const tools = {};
+  ORDER.forEach(id => { tools[id] = { target: state.targets[id], inputs: state.inputs[id], toggles: state.toggles[id] }; });
+  store.set(KEY_DRAFT, { tool: state.tool, tools });
+}
+
+const $ = id => document.getElementById(id);
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove("show"), 1800);
+}
+function updateHistBadge() { $("histCount").textContent = history.length ? String(history.length) : ""; }
+
+function buildTabs() {
+  $("tabbar").innerHTML = ORDER.map(id =>
+    '<button class="tab" role="tab" data-tool="' + id + '" aria-selected="false">' + ICON[id] + "<span>" + TOOLS[id].name + "</span></button>"
+  ).join("");
+  $("tabbar").querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => openTool(b.dataset.tool)));
+}
+function markTabs() {
+  document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", state.view === "tool" && b.dataset.tool === state.tool ? "true" : "false"));
+  $("btnHist").setAttribute("aria-pressed", state.view === "hist" ? "true" : "false");
+}
+
+function openTool(id) {
+  state.tool = id; state.view = "tool";
+  const tl = TOOLS[id], tgt = state.targets[id];
+  $("toolIntro").textContent = tl.intro;
+  let html = '<p class="hint">' + (tl.defaultTarget ? 'Preencha o que você sabe e toque em <b>calcular</b> no campo que quer descobrir.' : "Preencha os campos. A resposta aparece na hora.") + "</p>";
+  html += '<div class="card fields">' + tl.fields.map(f => {
+    const unit = f.unit || (f.type === "money" ? "R$" : f.type === "pct" ? "%" : "");
+    const canTarget = tl.defaultTarget && !f.optional;
+    return '<div class="frow" id="row-' + f.id + '">' +
+      '<label for="in-' + f.id + '">' + f.label + (f.optional ? '<span class="opt">opcional</span>' : "") + "</label>" +
+      '<div class="fin"><span class="unit">' + unit + "</span>" +
+      '<input id="in-' + f.id + '" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="done" placeholder="' + (f.optional ? "0" : "0,00") + '">' +
+      (canTarget ? '<button type="button" class="chip" data-target="' + f.id + '" aria-pressed="false">calcular</button>' : "") +
+      "</div></div>";
+  }).join("") + "</div>";
+  if (tl.toggles) html += tl.toggles.map(g =>
+    '<label class="card switch" for="tg-' + g.id + '"><input type="checkbox" id="tg-' + g.id + '"><span class="track" aria-hidden="true"></span><span>' + g.label + "</span></label>"
+  ).join("");
+  html += '<section class="result" id="result" aria-live="polite"><p class="r-label" id="rLabel"></p><p class="r-value" id="rValue"></p><p class="r-msg" id="rMsg"></p><dl class="r-lines" id="rLines"></dl></section>';
+  html += '<div class="actions"><button type="button" class="btn primary" id="btnSave">' + ICON.save + "Salvar no histórico</button>" +
+    '<button type="button" class="btn" id="btnCopy" aria-label="Copiar resultado">' + ICON.copy + "</button>" +
+    '<a class="btn" id="btnWa" target="_blank" rel="noopener" aria-label="Enviar pelo WhatsApp">' + ICON.share + "</a></div>";
+  html += '<div id="extra"></div>';
+  $("view").innerHTML = html;
+
+  tl.fields.forEach(f => {
+    const el = $("in-" + f.id);
+    el.value = state.inputs[id][f.id];
+    el.addEventListener("input", () => { state.inputs[id][f.id] = el.value; compute(); saveDraft(); });
+    el.addEventListener("blur", () => {
+      if (f.type !== "money" || f.id === state.targets[id]) return;
+      const v = parseNum(el.value);
+      if (v !== null && Number.isFinite(v)) { el.value = nf2.format(v); state.inputs[id][f.id] = el.value; saveDraft(); }
+    });
+  });
+  document.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => {
+    if (state.targets[id] === c.dataset.target) return;
+    state.targets[id] = c.dataset.target;
+    applyTargetUI(); compute(); saveDraft();
+  }));
+  (tl.toggles || []).forEach(g => {
+    const el = $("tg-" + g.id);
+    el.checked = !!state.toggles[id][g.id];
+    el.addEventListener("change", () => { state.toggles[id][g.id] = el.checked; compute(); saveDraft(); });
+  });
+  $("btnSave").addEventListener("click", saveToHistory);
+  $("btnCopy").addEventListener("click", copyResult);
+  applyTargetUI(); compute(); markTabs(); saveDraft();
+  $("main").scrollTop = 0;
+}
+
+function applyTargetUI() {
+  const tl = TOOLS[state.tool], tgt = state.targets[state.tool];
+  tl.fields.forEach(f => {
+    const row = $("row-" + f.id), el = $("in-" + f.id), on = f.id === tgt;
+    row.classList.toggle("is-target", on);
+    el.readOnly = on;
+    if (on) { el.value = ""; el.placeholder = "resultado"; } else el.placeholder = f.optional ? "0" : "0,00";
+    const chip = row.querySelector(".chip");
+    if (chip) { chip.textContent = on ? "resultado" : "calcular"; chip.setAttribute("aria-pressed", on ? "true" : "false"); }
+  });
+}
+
+function showResult(r) {
+  const box = $("result");
+  box.className = "result" + (r.isError ? " is-error" : "") + (r.tone === "bad" ? " tone-bad" : "");
+  $("rLabel").textContent = r.label;
+  $("rValue").textContent = r.value;
+  $("rMsg").textContent = r.msg || "";
+  $("rLines").innerHTML = (r.lines || []).map(l => "<dt>" + l[0] + "</dt><dd>" + l[1] + "</dd>").join("");
+  $("extra").innerHTML = r.extra || "";
+  const ok = !r.isError;
+  $("btnSave").disabled = !ok;
+  $("btnCopy").disabled = !ok;
+  const wa = $("btnWa");
+  wa.classList.toggle("off", !ok);
+  wa.href = ok ? "https://wa.me/?text=" + encodeURIComponent(shareText()) : "#";
+}
+
+function compute() {
+  const id = state.tool, tl = TOOLS[id], tgt = state.targets[id];
+  const vals = {}, missing = [], bad = [];
+  tl.fields.forEach(f => {
+    const row = $("row-" + f.id);
+    row.classList.remove("bad");
+    if (f.id === tgt) { vals[f.id] = null; return; }
+    let x = parseNum(state.inputs[id][f.id]);
+    if (x === null) { if (f.optional) { vals[f.id] = 0; return; } missing.push(f.label); return; }
+    if (Number.isNaN(x) || x < 0) { bad.push(f.label); row.classList.add("bad"); return; }
+    if (f.type === "int" && (!Number.isInteger(x) || x < 1)) { bad.push(f.label + " (número inteiro, mínimo 1)"); row.classList.add("bad"); return; }
+    if (f.type === "pct") x = x / 100;
+    vals[f.id] = x;
+  });
+  const fail = (label, value, msg) => { last = null; if (tgt) $("in-" + tgt).value = ""; showResult({ isError: true, label, value, msg }); };
+  if (bad.length) return fail("Confira o campo", bad[0], "Use só números, com vírgula nos centavos.");
+  if (missing.length) return fail("Falta preencher", missing[0], missing.length > 1 ? "E mais " + (missing.length - 1) + " campo(s)." : "");
+  const r = tl.solve(vals, tgt, state.toggles[id] || {});
+  if (r.error) return fail("Não deu certo", r.error, "");
+  if (tgt) {
+    const f = tl.fields.find(x => x.id === tgt);
+    $("in-" + tgt).value = inputDisplay(f, r.vals[tgt]);
+  }
+  last = r;
+  showResult(r);
+}
+
+function shareText() {
+  if (!last) return "";
+  const tl = TOOLS[state.tool], o = last.vals;
+  const out = [tl.name + " · Juro Claro", ""];
+  tl.fields.forEach(f => {
+    const x = o[f.id];
+    if (x === null || x === undefined || (f.optional && !x)) return;
+    out.push(f.label + ": " + shareDisplay(f, x));
+  });
+  (tl.toggles || []).forEach(g => { if (state.toggles[state.tool][g.id]) out.push(g.label); });
+  out.push("", last.label + ": " + last.value);
+  last.lines.forEach(l => out.push(l[0] + ": " + l[1]));
+  if (last.msg) out.push("", last.msg);
+  return out.join("\n");
+}
+
+function copyResult() {
+  if (!last) return;
+  try {
+    navigator.clipboard.writeText(shareText()).then(() => toast("Resultado copiado"), () => toast("Não foi possível copiar aqui"));
+  } catch (e) { toast("Não foi possível copiar aqui"); }
+}
+
+function saveToHistory() {
+  if (!last) return;
+  const id = state.tool, tl = TOOLS[id], tgt = state.targets[id];
+  const inputs = Object.assign({}, state.inputs[id]);
+  if (tgt) inputs[tgt] = "";
+  const resumo = tl.fields.filter(f => f.id !== tgt && last.vals[f.id] && !(f.optional && !last.vals[f.id]))
+    .slice(0, 3).map(f => shareDisplay(f, last.vals[f.id])).join(" · ");
+  history.unshift({ id: Date.now(), tool: id, target: tgt, inputs, toggles: Object.assign({}, state.toggles[id]), label: last.label, value: last.value, resumo, ts: Date.now() });
+  history = history.slice(0, 200);
+  toast(store.set(KEY_HIST, history) ? "Salvo no histórico" : "Este aparelho não deixou salvar");
+  updateHistBadge();
+}
+
+function openHistory() {
+  state.view = "hist";
+  $("toolIntro").textContent = "Cálculos salvos neste aparelho";
+  markTabs();
+  renderHistory();
+  $("main").scrollTop = 0;
+}
+function renderHistory() {
+  if (!history.length) {
+    $("view").innerHTML = '<div class="hist-head"><h2>Histórico</h2></div><div class="card empty"><strong>Nenhum cálculo salvo ainda</strong>Faça uma conta e toque em Salvar no histórico. Ela fica guardada neste aparelho.</div>';
+    return;
+  }
+  const fmtDate = ts => new Date(ts).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
+  $("view").innerHTML = '<div class="hist-head"><h2>Histórico</h2><button type="button" class="linkbtn" id="btnClear">Apagar tudo</button></div>' +
+    '<ul class="hlist">' + history.map(h =>
+      '<li class="card hitem"><span class="htool">' + (TOOLS[h.tool] ? TOOLS[h.tool].name : h.tool) + '</span><span class="hdate">' + fmtDate(h.ts) + "</span>" +
+      '<span class="hval">' + h.label + ": " + h.value + "</span><span></span>" +
+      '<span class="hsub">' + (h.resumo || "") + "</span>" +
+      '<div class="hbtns"><button type="button" class="btn primary" data-open="' + h.id + '">Abrir</button><button type="button" class="btn" data-del="' + h.id + '">Apagar</button></div></li>'
+    ).join("") + "</ul>";
+  $("view").querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => restore(Number(b.dataset.open))));
+  $("view").querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => {
+    history = history.filter(h => h.id !== Number(b.dataset.del));
+    store.set(KEY_HIST, history); updateHistBadge(); renderHistory(); toast("Cálculo apagado");
+  }));
+  const clear = $("btnClear");
+  clear.addEventListener("click", () => {
+    if (clear.dataset.armed) {
+      history = []; store.set(KEY_HIST, history); updateHistBadge(); renderHistory(); toast("Histórico apagado");
+    } else {
+      clear.dataset.armed = "1"; clear.textContent = "Toque de novo para apagar";
+      setTimeout(() => { if (clear.isConnected) { delete clear.dataset.armed; clear.textContent = "Apagar tudo"; } }, 3000);
+    }
+  });
+}
+function restore(hid) {
+  const h = history.find(x => x.id === hid);
+  if (!h || !TOOLS[h.tool]) return;
+  state.targets[h.tool] = h.target;
+  TOOLS[h.tool].fields.forEach(f => { state.inputs[h.tool][f.id] = h.inputs[f.id] !== undefined ? h.inputs[f.id] : f.def; });
+  state.toggles[h.tool] = Object.assign({}, h.toggles || {});
+  openTool(h.tool);
+}
+
+$("btnHist").addEventListener("click", () => state.view === "hist" ? openTool(state.tool) : openHistory());
+buildTabs();
+updateHistBadge();
+openTool(state.tool);
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
+</script>
+</body>
+</html>
