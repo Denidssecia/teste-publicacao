@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F5E58">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Banca de Ideias">
+<meta name="description" content="Teste sua ideia de negócio diante de uma banca cética e receba nota de 0 a 10 com riscos e pontos cegos.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://apps-denilson.netlify.app/ideias/">
+<meta property="og:title" content="Banca de Ideias">
+<meta property="og:description" content="Toque para abrir e instalar o app. Conte sua ideia, responda à banca e receba uma nota sem bajulação.">
+<meta property="og:image" content="https://apps-denilson.netlify.app/ideias/icon.svg">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>Banca de Ideias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: app de uma coluna, estilo loja; barra superior fixa, telas trocadas por abas, cartão de pergunta por vez. */
+:root{
+  --bg:#F3F5F4; --surface:#FFFFFF; --surface2:#E9EEEC; --ink:#10201F; --muted:#5A6B69; --line:#D5DEDB;
+  --brand:#0F5E58; --brand-ink:#FFFFFF; --accent:#E2541B; --accent-soft:#FCE6DC;
+  --good:#1E8A4C; --warn:#C98A06; --bad:#C62E2E;
+  --shadow:0 6px 24px rgba(16,32,31,.08);
+  --f-display:"Sora",system-ui,sans-serif; --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0C1514; --surface:#14201F; --surface2:#1B2A28; --ink:#E6EFED; --muted:#93A6A3; --line:#26403C;
+  --brand:#2BA597; --brand-ink:#04110F; --accent:#FF7A45; --accent-soft:#3A2017;
+  --good:#3CC57A; --warn:#E8B02E; --bad:#F06262; --shadow:0 6px 24px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C1514; --surface:#14201F; --surface2:#1B2A28; --ink:#E6EFED; --muted:#93A6A3; --line:#26403C;
+  --brand:#2BA597; --brand-ink:#04110F; --accent:#FF7A45; --accent-soft:#3A2017;
+  --good:#3CC57A; --warn:#E8B02E; --bad:#F06262; --shadow:0 6px 24px rgba(0,0,0,.35); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--brand)}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 120px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--brand);color:var(--brand-ink)}
+header.top .in{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px;display:flex;align-items:center;gap:12px}
+.logo{width:40px;height:40px;border-radius:12px;background:var(--accent);display:grid;place-items:center;flex:none}
+.logo svg{width:24px;height:24px}
+.brandname{font-family:var(--f-display);font-weight:800;font-size:19px;line-height:1.1}
+.brandsub{font-size:12px;opacity:.85}
+.top .sp{flex:1}
+.iconbtn{white-space:nowrap;background:transparent;border:1px solid currentColor;color:inherit;border-radius:10px;padding:6px 10px;font:600 13px var(--f-body);cursor:pointer}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+h1{font-size:24px;line-height:1.2}
+h2{font-size:19px}
+h3{font-size:16px}
+p{margin:0}
+.stack{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+textarea{width:100%;min-height:150px;resize:vertical;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:14px;padding:14px;font:16px/1.5 var(--f-body)}
+textarea:focus,button:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 45%,transparent);outline-offset:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:14px 18px;font:700 16px var(--f-body);cursor:pointer;min-height:52px}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.brand{background:var(--brand);color:var(--brand-ink)}
+.btn.ghost{background:var(--surface2);color:var(--ink)}
+.btn.block{width:100%}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>.btn{flex:1 1 140px}
+.mic{width:64px;height:64px;border-radius:50%;border:0;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;cursor:pointer;flex:none;box-shadow:var(--shadow)}
+.mic svg{width:28px;height:28px}
+.mic.on{background:var(--bad);color:#fff;animation:pulse 1.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--bad) 50%,transparent)}100%{box-shadow:0 0 0 18px transparent}}
+@media (prefers-reduced-motion:reduce){.mic.on,.spin{animation:none!important}}
+.microw{display:flex;align-items:center;gap:14px}
+.partial{font-style:italic;color:var(--muted);min-height:1.4em;font-size:14px}
+.hint{background:var(--accent-soft);border-radius:12px;padding:10px 12px;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;font:600 13px var(--f-body);cursor:pointer}
+.persona{display:flex;align-items:center;gap:12px}
+.av{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font:800 15px var(--f-display);color:#fff;flex:none}
+.pname{font-weight:700}
+.ptag{font-size:12px;color:var(--muted)}
+.qtext{font-family:var(--f-display);font-weight:700;font-size:20px;line-height:1.3}
+.why{font-size:14px;color:var(--muted);border-left:3px solid var(--line);padding-left:10px}
+.opt{width:100%;text-align:left;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:14px;font:600 16px var(--f-body);cursor:pointer}
+.opt.sel{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--surface))}
+.yn{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.yn .opt{text-align:center}
+.progress{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.progress>i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+.tab{background:none;border:0;color:var(--muted);padding:10px 4px 12px;font:600 12px var(--f-body);display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.tab svg{width:24px;height:24px}
+.tab.act{color:var(--brand)}
+.loading{display:flex;align-items:center;gap:14px}
+.spin{width:34px;height:34px;border-radius:50%;border:4px solid var(--surface2);border-top-color:var(--accent);animation:sp 1s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+.score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.gauge{width:132px;height:132px;flex:none}
+.verdict{font-family:var(--f-display);font-weight:800;font-size:22px;line-height:1.2}
+.pill{display:inline-block;border-radius:999px;padding:3px 10px;font:700 12px var(--f-body);color:#fff}
+.bars{display:flex;flex-direction:column;gap:14px}
+.bar .lbl{display:flex;justify-content:space-between;gap:8px;font-weight:700}
+.bar .n{font-variant-numeric:tabular-nums}
+.bar .track{height:10px;border-radius:99px;background:var(--surface2);margin:6px 0;overflow:hidden}
+.bar .track i{display:block;height:100%;border-radius:99px}
+ul.list{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.risk{border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.sec-h{display:flex;align-items:center;gap:10px}
+.sec-h .dot{width:10px;height:10px;border-radius:3px;flex:none}
+.hist{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;color:var(--ink);cursor:pointer;font:inherit}
+.hist .sc{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font:800 18px var(--f-display);color:#fff;flex:none;font-variant-numeric:tabular-nums}
+.hist .t{min-width:0;flex:1}
+.hist .t b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.banner{border-radius:14px;padding:12px 14px;background:var(--accent-soft);font-size:14px}
+.qa{border-bottom:1px solid var(--line);padding-block:10px}
+.qa:last-child{border-bottom:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:20;max-width:calc(100% - 32px)}
+.panel{display:flex;flex-wrap:wrap;gap:6px}
+.panel .chip{cursor:default}
+</style>
+<style>
+html{-webkit-text-size-adjust:100%}
+body{margin:0;padding-top:env(safe-area-inset-top,0px)}
+[hidden]{display:none!important}
+.inst{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 0}
+.inst .card{border:2px solid var(--accent)}
+.inst ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.inst details summary{cursor:pointer;font-weight:600;color:var(--brand)}
+.diag{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-direction:column;gap:6px;font-size:14px}
+</style>
+</head>
+<body>
+
+
+<header class="top"><div class="in">
+  <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></svg></div>
+  <div><div class="brandname">Banca de Ideias</div><div class="brandsub">Sua ideia diante de uma banca cética</div></div>
+  <div class="sp"></div>
+  <button class="iconbtn" id="btnNova" type="button">+ Nova</button>
+</div></header>
+
+
+<section class="inst" id="instCard" hidden>
+  <div class="card stack">
+    <div class="row" style="align-items:center;justify-content:space-between">
+      <h3>Instale o app</h3>
+      <button class="chip" type="button" id="instFechar">Agora não</button>
+    </div>
+    <p class="small muted">Fica na tela inicial do celular, com ícone próprio, e abre em tela cheia.</p>
+    <button class="btn primary block" type="button" id="instBtn" hidden>Instalar</button>
+    <div id="instPassos" class="small"></div>
+    <details id="instDiag"><summary>Não aparece a opção? Ver diagnóstico</summary><ul class="diag" id="diagLista"></ul></details>
+  </div>
+</section>
+
+<main class="wrap" id="app"></main>
+
+<nav class="tabs"><div class="in">
+  <button class="tab act" data-tab="ideia" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Ideia</button>
+  <button class="tab" data-tab="entrevista" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Entrevista</button>
+  <button class="tab" data-tab="resultado" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Avaliação</button>
+</div></nav>
+
+<script>
+(function(){
+"use strict";
+/* ---------- Banca de especialistas ---------- */
+const PERSONAS = {
+  cerebro:   {nome:"Cérebro", papel:"Coordenador da banca", ini:"CB", cor:"#0F5E58"},
+  financeiro:{nome:"Financeiro", papel:"Custos, preço e caixa", ini:"FI", cor:"#1E7A46"},
+  mercado:   {nome:"Mercado", papel:"Demanda e concorrência", ini:"ME", cor:"#C24A12"},
+  tecnico:   {nome:"Técnico", papel:"Operação e execução", ini:"TE", cor:"#3E5BA9"},
+  digital:   {nome:"Digital", papel:"Internet, app e vendas online", ini:"DI", cor:"#7A3FA0"},
+  usuario:   {nome:"Cliente", papel:"Quem vai pagar", ini:"CL", cor:"#B4337A"},
+  juridico:  {nome:"Jurídico", papel:"Leis, licenças e contratos", ini:"JU", cor:"#5C5F66"}
+};
+const EXEMPLO = "Quero montar um serviço de troca de pneus de caminhão a domicílio, na garagem da transportadora, à noite, para o caminhão não parar durante o dia. Teria uma van equipada, um borracheiro e eu cuidando das vendas. Cobraria por pneu trocado, mais um valor fixo mensal para quem tiver frota acima de 20 caminhões. Começaria na Baixada Fluminense.";
+
+/* ---------- Estado ---------- */
+const KEY="banca-ideias-v1";
+let S = load() || novoEstado();
+function novoEstado(){return {id:Date.now(), ideia:"", analise:null, perguntas:[], respostas:{}, idx:0, avaliacao:null, rodadas:0, tab:"ideia"}}
+function load(){try{const r=JSON.parse(localStorage.getItem(KEY)||"null");return r&&r.atual?r.atual:null}catch(e){return null}}
+function hist(){try{const r=JSON.parse(localStorage.getItem(KEY)||"null");return (r&&r.hist)||[]}catch(e){return []}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({atual:S,hist:HIST}))}catch(e){}}
+let HIST = hist();
+
+/* ---------- Capacidades do Claude ---------- */
+let sample=null, dict=null, tts=null, capsReady=false;
+const C = window.claude;
+if(C && C.use){
+  C.use("sample").then(s=>{sample=s;capsReady=true;render()}).catch(()=>{capsReady=true;render()});
+  C.use("dictation").then(d=>{dict=d;if(d)wireDict();render()}).catch(()=>{});
+  C.use("tts").then(t=>{tts=t;render()}).catch(()=>{});
+}else{sample=netSample();capsReady=true}
+
+/* ---------- IA pelo servidor (app instalado) ---------- */
+function netSample(){
+  async function call(input,opts){
+    opts=opts||{};
+    if(!navigator.onLine)throw {code:"offline"};
+    let res;
+    try{res=await fetch("/api/banca",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:String(input),tier:opts.modelTier||"default"}),signal:opts.signal})}
+    catch(e){throw {code:(opts.signal&&opts.signal.aborted)?"cancelled":"upstream_error"}}
+    if(res.status===429)throw {code:"rate_limited"};
+    if(!res.ok)throw {code:"upstream_error"};
+    const rd=res.body.getReader(),dec=new TextDecoder();let t="";
+    try{for(;;){const r=await rd.read();if(r.done)break;t+=dec.decode(r.value,{stream:true});if(opts.onText)opts.onText({text:t})}}
+    catch(e){throw {code:(opts.signal&&opts.signal.aborted)?"cancelled":"upstream_error"}}
+    if(t.indexOf("[[ERRO]]")>=0||!t.trim())throw {code:"upstream_error"};
+    return {text:t,truncated:false};
+  }
+  const f=(i,o)=>call(i,o);
+  f.json=async(i,o)=>parseJ((await call(i,o)).text);
+  return f;
+}
+function parseJ(t){
+  try{return JSON.parse(t)}catch(e){}
+  const m=t.match(/```(?:json)?\s*([\s\S]*?)```/);if(m){try{return JSON.parse(m[1])}catch(e){}}
+  const ia=t.indexOf("{"),ib=t.indexOf("["),a=[ia,ib].filter(x=>x>=0).sort((x,y)=>x-y)[0],b=Math.max(t.lastIndexOf("}"),t.lastIndexOf("]"));
+  if(a!=null&&a<b){try{return JSON.parse(t.slice(a,b+1))}catch(e){}}
+  throw {code:"invalid_json"};
+}
+
+/* ---------- Ditado (microfone) ---------- */
+let micTarget=null, micOn=false, partialEl=null, webRec=null;
+function wireDict(){
+  dict.onPartial(({text})=>{if(partialEl)partialEl.textContent=text});
+  dict.onFinal(({text})=>{
+    if(!micTarget)return;
+    let t=text; if(!micTarget.value.trim()) t=t.replace(/^\s+/,"");
+    micTarget.value+=t; micTarget.dispatchEvent(new Event("input"));
+  });
+  dict.onState(({state,reason})=>{
+    micOn = state!=="idle";
+    document.querySelectorAll(".mic").forEach(b=>b.classList.toggle("on",micOn));
+    if(state==="idle"){ if(partialEl)partialEl.textContent="";
+      if(reason==="unavailable"||reason==="not_granted"){dict=null;toast("Microfone indisponível aqui. Use o microfone do teclado do celular.");render()}
+      else if(reason==="rate_limited"||reason==="upstream_error")toast("O microfone falhou. Tente de novo em instantes.");
+    }
+  });
+}
+function micClick(target, pEl){
+  micTarget=target; partialEl=pEl;
+  if(dict){
+    if(micOn){dict.stop().catch(()=>{});return}
+    dict.start().catch(e=>{ if(e&&e.code==="not_granted"){dict=null;render()} if(e&&e.code!=="stopped"&&e.code!=="dismissed")toast("Não consegui abrir o microfone. Use o microfone do teclado.") });
+    return;
+  }
+  const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR){
+    try{
+      if(webRec){webRec.stop();return}
+      webRec=new SR(); webRec.lang="pt-BR"; webRec.continuous=true; webRec.interimResults=true;
+      webRec.onresult=ev=>{let fin="",tmp="";for(let i=ev.resultIndex;i<ev.results.length;i++){const r=ev.results[i];if(r.isFinal)fin+=r[0].transcript;else tmp+=r[0].transcript}
+        if(fin){target.value+=(target.value.trim()?" ":"")+fin.trim();target.dispatchEvent(new Event("input"))} if(pEl)pEl.textContent=tmp};
+      webRec.onend=()=>{webRec=null;setMic(false)};
+      webRec.onerror=()=>{webRec=null;setMic(false);fallbackMic(target)};
+      webRec.start(); setMic(true); return;
+    }catch(e){webRec=null}
+  }
+  fallbackMic(target);
+}
+function setMic(v){micOn=v;document.querySelectorAll(".mic").forEach(b=>b.classList.toggle("on",v))}
+function fallbackMic(target){target.focus();toast("Toque no microfone do teclado do celular para falar.")}
+
+/* ---------- Voz (ouvir) ---------- */
+function speak(text){ if(!tts)return; tts.speak(text,{language:"pt-BR"}).catch(()=>{}) }
+
+/* ---------- Utilidades ---------- */
+function h(tag,attrs,...kids){const el=document.createElement(tag);if(attrs)for(const k in attrs){const v=attrs[k];if(v==null||v===false)continue;
+  if(k==="class")el.className=v;else if(k.startsWith("on"))el.addEventListener(k.slice(2),v);else if(k==="html")el.innerHTML=v;else el.setAttribute(k,v===true?"":v)}
+  for(const c of kids.flat()){if(c==null||c===false)continue;el.append(c.nodeType?c:document.createTextNode(String(c)))}return el}
+function toast(msg){const t=h("div",{class:"toast",role:"status"},msg);document.body.append(t);setTimeout(()=>t.remove(),3800)}
+function corNota(n){return n>=7?"var(--good)":n>=5?"var(--warn)":"var(--bad)"}
+function arr(x){return Array.isArray(x)?x.filter(v=>v!=null&&v!==""):[]}
+function num(x){const n=Number(x);return isFinite(n)?Math.max(0,Math.min(10,Math.round(n*10)/10)):0}
+const ICON_MIC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+function micBlock(target){
+  const p=h("div",{class:"partial","aria-live":"polite"});
+  const b=h("button",{class:"mic"+(micOn?" on":""),type:"button","aria-label":"Falar",html:ICON_MIC,onclick:()=>micClick(target,p)});
+  return h("div",{class:"stack",style:"gap:6px"},h("div",{class:"microw"},b,h("div",{class:"small muted"},"Toque no microfone e fale. Toque de novo para parar.")),p);
+}
+function errMsg(e){const c=e&&e.code;
+  if(c==="offline")return "Sem internet agora. A entrevista e a avaliação precisam de conexão; sua ideia fica salva no aparelho.";
+  if(c==="not_granted")return "Você não liberou o uso do Claude nesta página. Abra o menu do artefato e permita para continuar.";
+  if(c==="rate_limited")return "Muitas chamadas seguidas ou limite de uso atingido. Espere um pouco e tente de novo.";
+  if(c==="invalid_json"||c==="empty_completion")return "A resposta veio incompleta. Toque em tentar de novo.";
+  if(c==="session_expired")return "Sua sessão expirou. Entre de novo no Claude.";
+  if(c==="refused")return "A IA recusou esse conteúdo. Reescreva a ideia e tente de novo.";
+  return "Falha de conexão com a IA. Tente de novo.";}
+
+/* ---------- Prompts ---------- */
+const BANCA = `Banca disponível (use o id exato): financeiro (custos, preço, margem, capital, caixa), mercado (demanda, concorrência, tamanho do mercado, diferencial), tecnico (operação, execução, logística, capacidade de entregar), digital (internet, app, redes, vendas online, automação), usuario (o cliente que paga: dor real, disposição a pagar, hábito), juridico (SOMENTE se houver questão legal, regulatória, licença, tributária ou contratual concreta).`;
+function promptEntrevista(){
+  return `Você é o CÉREBRO, coordenador de uma banca que testa ideias de negócio de qualquer segmento. Sua postura é a de um investidor cético: você procura o que pode fazer a ideia fracassar. Nada de elogios, nada de incentivo vazio.
+${BANCA}
+
+Tarefa: leia a ideia abaixo, identifique as lacunas mais perigosas (o que falta saber para decidir se vale a pena) e gere de 6 a 8 perguntas, cada uma feita pelo especialista certo. Comece pelas perguntas que mais podem derrubar a ideia.
+Regras das perguntas:
+- Linguagem simples, sem jargão, no máximo 25 palavras. A pessoa responde pelo celular.
+- Misture os tipos: "sim_nao", "multipla" (3 a 5 opções curtas e exclusivas, a última sempre "Não sei") e "aberta" (quando só um relato responde).
+- Pelo menos 3 especialistas diferentes. Não repita assunto.
+- "motivo": uma frase dizendo por que essa resposta importa para a nota.
+
+IDEIA (narrada pelo empreendedor, pode ter erros de fala):
+"""${S.ideia.slice(0,6000)}"""
+
+Responda SOMENTE com JSON neste formato:
+{"titulo":"nome curto da ideia, até 6 palavras","segmento":"segmento de mercado","resumo":"a ideia em 2 frases, neutro","lacunas":["lacuna 1","lacuna 2","lacuna 3"],"perguntas":[{"persona":"financeiro","tipo":"multipla","pergunta":"...","opcoes":["...","...","Não sei"],"motivo":"..."}]}`;
+}
+function transcricao(){
+  return S.perguntas.map((q,i)=>{const r=S.respostas[i];const p=PERSONAS[q.persona]?PERSONAS[q.persona].nome:q.persona;
+    return `[${p}] ${q.pergunta}\nResposta: ${r&&String(r).trim()?r:"(não respondeu)"}`}).join("\n\n");
+}
+function promptAprofundar(){
+  return `Você é o CÉREBRO, coordenador cético de uma banca que testa ideias de negócio. ${BANCA}
+
+IDEIA:
+"""${S.ideia.slice(0,6000)}"""
+
+ENTREVISTA ATÉ AGORA:
+${transcricao().slice(0,12000)}
+
+Tarefa: gere de 3 a 5 NOVAS perguntas que aprofundem as respostas mais fracas, vagas, contraditórias ou não respondidas. Não repita perguntas já feitas. Mesmas regras: linguagem simples, até 25 palavras, tipos "sim_nao", "multipla" (última opção "Não sei") ou "aberta", e "motivo" em uma frase.
+Responda SOMENTE com JSON: {"perguntas":[{"persona":"mercado","tipo":"aberta","pergunta":"...","motivo":"..."}]}`;
+}
+function promptAvaliar(){
+  return `Você é uma banca de investidores céticos avaliando uma ideia de negócio. Você NÃO está avaliando a pessoa, e sim a chance real de a ideia dar certo. Sua função é abrir os olhos do empreendedor para pontos fracos, ameaças e riscos. A IA costuma ser otimista e bajuladora: corrija isso ativamente. Não suavize, não elogie por educação, não use frases motivacionais.
+
+Régua de notas (0 a 10), aplique com rigor:
+- 0 a 2: falha grave e provável (sem cliente pagante plausível, ilegal, conta não fecha).
+- 3 a 4: ideia comum, sem diferencial claro, riscos altos sem resposta.
+- 5 a 6: pode funcionar, mas depende de premissas ainda não provadas. É onde fica a maioria das ideias.
+- 7 a 8: diferencial claro E alguma evidência concreta (clientes já interessados, números, experiência no ramo).
+- 9 a 10: raríssimo; exige evidência forte de demanda, margem e vantagem difícil de copiar.
+Resposta "não sei", vaga ou pulada é um RISCO e puxa a nota daquela área para baixo. Afirmações sem número ou prova valem pouco. Se a nota geral passar de 7, justifique com a evidência concreta que a sustenta.
+
+IDEIA:
+"""${S.ideia.slice(0,6000)}"""
+
+ENTREVISTA:
+${transcricao().slice(0,14000)}
+
+Avalie as áreas: "Viabilidade técnica", "Mercado", "Financeira", "Digital e canais", "Cliente (disposição a pagar)" e, só se houver tema legal, "Jurídica". A nota geral NÃO é a média simples: um ponto fatal derruba a nota geral.
+Responda SOMENTE com JSON neste formato:
+{"nota_geral":5.5,"veredito":"frase curta e direta, até 12 palavras","resumo":"3 a 4 frases sem rodeio","areas":[{"area":"Viabilidade técnica","nota":6,"justificativa":"por que essa nota, citando a resposta que pesou"}],"pontos_fortes":["no máximo 3, só o que é real"],"pontos_fracos":["..."],"pontos_cegos":["o que o empreendedor não percebeu e nem foi perguntado"],"riscos":[{"risco":"...","gravidade":"alta","mitigacao":"o que fazer para reduzir"}],"ameacas":["concorrentes, mudanças de mercado, fatores externos"],"testes_baratos":["teste de baixo custo para validar a premissa mais arriscada antes de investir"],"o_que_mudaria_a_nota":"o que precisaria ser provado para a nota subir"}`;
+}
+
+/* ---------- Ações ---------- */
+let busy=null, ctl=null;
+function semIA(){return capsReady && !sample}
+async function iniciarEntrevista(){
+  if(!sample){toast("A IA só funciona com a página aberta dentro do Claude.");return}
+  if(S.ideia.trim().length<40){toast("Conte um pouco mais da ideia (pelo menos umas 2 frases).");return}
+  busy={tipo:"entrevista",msg:"O Cérebro está lendo sua ideia e chamando a banca…"};S.tab="entrevista";render();
+  ctl=new AbortController();
+  try{
+    const r=await sample.json(promptEntrevista(),{signal:ctl.signal});
+    const qs=arr(r&&r.perguntas).filter(q=>q&&q.pergunta).map(normQ);
+    if(!qs.length)throw {code:"invalid_json"};
+    S.analise={titulo:String(r.titulo||"Minha ideia"),segmento:String(r.segmento||""),resumo:String(r.resumo||""),lacunas:arr(r.lacunas).map(String)};
+    S.perguntas=qs;S.respostas={};S.idx=0;S.avaliacao=null;S.rodadas=1;busy=null;save();render();
+  }catch(e){busy=null;if(e&&e.code!=="cancelled")erro=errMsg(e);render()}
+}
+function normQ(q){let tipo=["sim_nao","multipla","aberta"].includes(q.tipo)?q.tipo:"aberta";let opcoes=arr(q.opcoes).map(String);if(tipo==="multipla"&&opcoes.length<2)tipo="aberta";
+  return {persona:PERSONAS[q.persona]?q.persona:"cerebro",tipo,pergunta:String(q.pergunta),opcoes,motivo:String(q.motivo||"")}}
+async function aprofundar(){
+  if(!sample)return;
+  busy={tipo:"entrevista",msg:"A banca está analisando suas respostas para aprofundar…"};render();
+  ctl=new AbortController();
+  try{
+    const r=await sample.json(promptAprofundar(),{signal:ctl.signal,cache:false});
+    const qs=arr(r&&r.perguntas).filter(q=>q&&q.pergunta).map(normQ);
+    if(!qs.length)throw {code:"invalid_json"};
+    S.idx=S.perguntas.length;S.perguntas=S.perguntas.concat(qs);S.rodadas++;busy=null;save();render();
+  }catch(e){busy=null;if(e&&e.code!=="cancelled")erro=errMsg(e);render()}
+}
+async function avaliar(){
+  if(!sample){toast("A IA só funciona com a página aberta dentro do Claude.");return}
+  busy={tipo:"resultado",msg:"A banca está avaliando com rigor. Pode levar até 1 minuto…"};S.tab="resultado";render();
+  ctl=new AbortController();
+  try{
+    const r=await sample.json(promptAvaliar(),{signal:ctl.signal,modelTier:"complex",cache:false});
+    if(!r||r.nota_geral==null)throw {code:"invalid_json"};
+    S.avaliacao={...r,nota_geral:num(r.nota_geral),data:new Date().toISOString()};busy=null;
+    const item={id:S.id,titulo:S.analise?S.analise.titulo:"Ideia",nota:S.avaliacao.nota_geral,data:S.avaliacao.data,estado:JSON.parse(JSON.stringify(S))};
+    HIST=[item].concat(HIST.filter(x=>x.id!==S.id)).slice(0,30);save();render();window.scrollTo(0,0);
+  }catch(e){busy=null;if(e&&e.code!=="cancelled")erro=errMsg(e);render()}
+}
+let erro=null;
+
+/* ---------- Telas ---------- */
+const app=document.getElementById("app");
+function render(){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("act",t.dataset.tab===S.tab));
+  app.replaceChildren();
+  if(semIA()) app.append(h("div",{class:"banner",style:"margin-bottom:16px"},"A inteligência só responde com o app aberto dentro do Claude. Fora dele, você consegue apenas escrever a ideia."));
+  if(erro){app.append(h("div",{class:"banner",role:"alert",style:"margin-bottom:16px;border:1px solid var(--bad)"},erro));erro=null}
+  if(busy&&busy.tipo===S.tab){app.append(telaCarregando());return}
+  ({ideia:telaIdeia,entrevista:telaEntrevista,resultado:telaResultado})[S.tab]();
+}
+function telaCarregando(){
+  return h("div",{class:"card stack"},
+    h("div",{class:"loading"},h("div",{class:"spin"}),h("div",null,h("h3",null,"Pensando…"),h("p",{class:"muted small"},busy.msg))),
+    h("button",{class:"btn ghost",type:"button",onclick:()=>{ctl&&ctl.abort();busy=null;render()}},"Cancelar"));
+}
+function telaIdeia(){
+  const ta=h("textarea",{id:"ideia",placeholder:"Ex.: quero abrir… o cliente é… vou cobrar… meu diferencial é…","aria-label":"Sua ideia"});
+  ta.value=S.ideia;
+  const cont=h("span",{class:"small muted"});
+  const upd=()=>{S.ideia=ta.value;cont.textContent=ta.value.trim()?ta.value.trim().split(/\s+/).length+" palavras":"";save()};
+  ta.addEventListener("input",upd);upd();
+  app.append(h("div",{class:"stack"},
+    h("div",{class:"stack",style:"gap:6px"},h("span",{class:"eyebrow"},"Passo 1 de 3"),h("h1",null,"Conte sua ideia inteira"),
+      h("p",{class:"muted"},"Fale como se explicasse para um investidor: o que é, para quem, quanto cobra, quanto custa, por que você. Qualquer segmento.")),
+    h("div",{class:"card stack"},micBlock(ta),ta,h("div",{class:"row",style:"align-items:center;justify-content:space-between"},cont,
+      h("button",{class:"chip",type:"button",onclick:()=>{ta.value=EXEMPLO;upd();toast("Exemplo carregado. Troque pela sua ideia quando quiser.")}},"Usar ideia de exemplo"))),
+    h("button",{class:"btn primary block",type:"button",onclick:iniciarEntrevista,disabled:!!busy},S.perguntas.length?"Refazer entrevista com esta ideia":"Começar entrevista"),
+    S.perguntas.length?h("button",{class:"btn ghost block",type:"button",onclick:()=>{S.tab="entrevista";render()}},"Continuar entrevista atual"):null,
+    cardBanca(),
+    cardHistorico()));
+}
+function cardBanca(){
+  return h("div",{class:"card stack"},h("h3",null,"Quem está na banca"),
+    h("p",{class:"small muted"},"O Cérebro lê a ideia e chama só quem precisa perguntar. O Jurídico entra apenas quando há questão legal."),
+    h("div",{class:"stack",style:"gap:10px"},Object.keys(PERSONAS).map(k=>{const p=PERSONAS[k];
+      return h("div",{class:"persona"},h("div",{class:"av",style:"background:"+p.cor},p.ini),h("div",null,h("div",{class:"pname"},p.nome),h("div",{class:"ptag"},p.papel)))})));
+}
+function cardHistorico(){
+  if(!HIST.length)return h("div",{class:"card stack"},h("h3",null,"Ideias avaliadas"),h("p",{class:"small muted"},"As ideias que você avaliar aparecem aqui com a nota, para comparar depois."));
+  return h("div",{class:"card stack"},h("h3",null,"Ideias avaliadas"),
+    h("div",{class:"stack",style:"gap:8px"},HIST.map(it=>h("button",{class:"hist",type:"button",onclick:()=>{S=JSON.parse(JSON.stringify(it.estado));S.tab="resultado";save();render();window.scrollTo(0,0)}},
+      h("div",{class:"sc",style:"background:"+corNota(it.nota)},String(it.nota).replace(".",",")),
+      h("div",{class:"t"},h("b",null,it.titulo),h("span",{class:"small muted"},new Date(it.data).toLocaleDateString("pt-BR")))))));
+}
+function telaEntrevista(){
+  if(!S.perguntas.length){
+    app.append(h("div",{class:"card stack"},h("h2",null,"A entrevista ainda não começou"),h("p",{class:"muted"},"Conte sua ideia primeiro. O Cérebro vai identificar as lacunas e chamar os especialistas certos."),
+      h("button",{class:"btn primary",type:"button",onclick:()=>{S.tab="ideia";render()}},"Contar minha ideia")));return;
+  }
+  const total=S.perguntas.length, respondidas=Object.keys(S.respostas).filter(k=>String(S.respostas[k]).trim()).length;
+  const fim=S.idx>=total;
+  const top=h("div",{class:"stack",style:"gap:8px"},
+    h("div",{class:"row",style:"justify-content:space-between;align-items:baseline"},h("span",{class:"eyebrow"},"Passo 2 de 3 · Entrevista"),h("span",{class:"small muted"},respondidas+" de "+total+" respondidas")),
+    h("div",{class:"progress"},h("i",{style:"width:"+Math.round(Math.min(S.idx,total)/total*100)+"%"})));
+  app.append(top);
+  const wrap=h("div",{class:"stack",style:"margin-top:16px"});app.append(wrap);
+  if(S.analise&&S.idx===0&&S.rodadas===1){
+    wrap.append(h("div",{class:"card stack"},h("div",{class:"persona"},h("div",{class:"av",style:"background:"+PERSONAS.cerebro.cor},"CB"),h("div",null,h("div",{class:"pname"},"Cérebro"),h("div",{class:"ptag"},S.analise.segmento))),
+      h("p",null,S.analise.resumo),S.analise.lacunas.length?h("div",{class:"stack",style:"gap:6px"},h("span",{class:"eyebrow"},"Lacunas que encontrei"),h("ul",{class:"list"},S.analise.lacunas.map(l=>h("li",null,l)))):null));
+  }
+  if(fim){
+    wrap.append(h("div",{class:"card stack"},h("h2",null,"Entrevista concluída"),
+      h("p",{class:"muted"},"Você pode pedir mais perguntas sobre as respostas fracas ou mandar a ideia para avaliação."),
+      h("button",{class:"btn primary block",type:"button",onclick:avaliar},"Avaliar ideia"),
+      h("button",{class:"btn ghost block",type:"button",onclick:aprofundar},"Aprofundar com mais perguntas"),
+      h("button",{class:"btn ghost block",type:"button",onclick:()=>{S.idx=0;render()}},"Revisar respostas")));
+    wrap.append(cardRespostas());return;
+  }
+  const q=S.perguntas[S.idx], p=PERSONAS[q.persona], val=S.respostas[S.idx]||"";
+  const card=h("div",{class:"card stack"});
+  card.append(h("div",{class:"row",style:"align-items:center;justify-content:space-between"},
+    h("div",{class:"persona"},h("div",{class:"av",style:"background:"+p.cor},p.ini),h("div",null,h("div",{class:"pname"},p.nome),h("div",{class:"ptag"},p.papel))),
+    tts?h("button",{class:"chip",type:"button",onclick:()=>speak(q.pergunta)},"Ouvir"):null));
+  card.append(h("div",{class:"small muted"},"Pergunta "+(S.idx+1)+" de "+total));
+  card.append(h("div",{class:"qtext"},q.pergunta));
+  if(q.motivo)card.append(h("div",{class:"why"},q.motivo));
+  const setR=v=>{S.respostas[S.idx]=v;save()};
+  if(q.tipo==="sim_nao"){
+    card.append(h("div",{class:"yn"},["Sim","Não","Não sei"].map(o=>h("button",{class:"opt"+(val===o?" sel":""),type:"button",onclick:()=>{setR(o);S.idx++;render();window.scrollTo(0,0)}},o))));
+  }else if(q.tipo==="multipla"){
+    card.append(h("div",{class:"stack",style:"gap:8px"},q.opcoes.map(o=>h("button",{class:"opt"+(val===o?" sel":""),type:"button",onclick:()=>{setR(o);S.idx++;render();window.scrollTo(0,0)}},o))));
+  }else{
+    const ta=h("textarea",{id:"resp-"+S.idx,placeholder:"Responda falando ou digitando…","aria-label":"Sua resposta",style:"min-height:120px"});ta.value=val;
+    ta.addEventListener("input",()=>setR(ta.value));
+    card.append(micBlock(ta),ta,h("button",{class:"btn brand block",type:"button",onclick:()=>{if(micOn&&dict)dict.stop().catch(()=>{});S.idx++;render();window.scrollTo(0,0)}},"Próxima"));
+  }
+  card.append(h("div",{class:"row"},
+    h("button",{class:"btn ghost",type:"button",disabled:S.idx===0,onclick:()=>{S.idx--;render()}},"Voltar"),
+    h("button",{class:"btn ghost",type:"button",onclick:()=>{if(!S.respostas[S.idx])S.respostas[S.idx]="";S.idx++;save();render()}},"Pular")));
+  wrap.append(card);
+  wrap.append(h("button",{class:"btn primary block",type:"button",onclick:avaliar},"Avaliar ideia agora"));
+  wrap.append(h("p",{class:"small muted",style:"text-align:center"},"Pergunta pulada conta como risco na avaliação."));
+}
+function cardRespostas(){
+  return h("div",{class:"card"},h("h3",{style:"margin-bottom:6px"},"Suas respostas"),
+    S.perguntas.map((q,i)=>{const r=S.respostas[i];return h("div",{class:"qa"},h("div",{class:"small muted"},(PERSONAS[q.persona]||{}).nome),h("div",{style:"font-weight:600"},q.pergunta),
+      h("div",{style:r&&String(r).trim()?"":"color:var(--bad)"},r&&String(r).trim()?r:"Não respondida"),
+      h("button",{class:"chip",type:"button",style:"margin-top:6px",onclick:()=>{S.idx=i;render();window.scrollTo(0,0)}},"Editar"))}));
+}
+function gauge(n){
+  const r=52,c=2*Math.PI*r,frac=n/10;
+  const svg=`<svg class="gauge" viewBox="0 0 132 132" role="img" aria-label="Nota ${n} de 10"><circle cx="66" cy="66" r="${r}" fill="none" style="stroke:var(--surface2)" stroke-width="14"/><circle cx="66" cy="66" r="${r}" fill="none" style="stroke:${corNota(n)}" stroke-width="14" stroke-linecap="round" stroke-dasharray="${(c*frac).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 66 66)"/><text x="66" y="70" text-anchor="middle" font-family="Sora,sans-serif" font-weight="800" font-size="34" style="fill:var(--ink)">${String(n).replace(".",",")}</text><text x="66" y="92" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" style="fill:var(--muted)">de 10</text></svg>`;
+  return h("div",{html:svg});
+}
+function secao(titulo,cor,itens){
+  itens=arr(itens);if(!itens.length)return null;
+  return h("div",{class:"card stack"},h("div",{class:"sec-h"},h("span",{class:"dot",style:"background:"+cor}),h("h3",null,titulo)),h("ul",{class:"list"},itens.map(t=>h("li",null,String(t)))));
+}
+function telaResultado(){
+  const A=S.avaliacao;
+  if(!A){
+    app.append(h("div",{class:"card stack"},h("h2",null,"Ainda sem avaliação"),h("p",{class:"muted"},S.perguntas.length?"Responda as perguntas que puder e toque em Avaliar ideia.":"Conte sua ideia e passe pela entrevista primeiro."),
+      S.perguntas.length?h("button",{class:"btn primary",type:"button",onclick:avaliar},"Avaliar ideia"):h("button",{class:"btn primary",type:"button",onclick:()=>{S.tab="ideia";render()}},"Contar minha ideia")));return;
+  }
+  const n=num(A.nota_geral);
+  const out=h("div",{class:"stack"});app.append(out);
+  out.append(h("div",{class:"stack",style:"gap:6px"},h("span",{class:"eyebrow"},"Passo 3 de 3 · Avaliação"),h("h1",null,S.analise?S.analise.titulo:"Sua ideia")));
+  out.append(h("div",{class:"card stack"},h("div",{class:"score"},gauge(n),h("div",{class:"stack",style:"gap:8px;flex:1;min-width:180px"},
+      h("span",{class:"pill",style:"background:"+corNota(n)+";align-self:flex-start"},n>=7?"Promissora com ressalvas":n>=5?"Depende de provas":"Risco alto"),
+      h("div",{class:"verdict"},String(A.veredito||"")))),
+    h("p",null,String(A.resumo||"")),
+    tts?h("button",{class:"btn ghost",type:"button",onclick:()=>speak(`Nota ${String(n).replace(".",",")} de 10. ${A.veredito||""}. ${A.resumo||""}`)},"Ouvir resumo"):null));
+  const areas=arr(A.areas);
+  if(areas.length)out.append(h("div",{class:"card stack"},h("h3",null,"Nota por área"),h("div",{class:"bars"},areas.map(a=>{const v=num(a.nota);
+    return h("div",{class:"bar"},h("div",{class:"lbl"},h("span",null,String(a.area||"")),h("span",{class:"n",style:"color:"+corNota(v)},String(v).replace(".",","))),
+      h("div",{class:"track"},h("i",{style:"width:"+v*10+"%;background:"+corNota(v)})),h("p",{class:"small muted"},String(a.justificativa||"")))}))));
+  out.append(secao("Pontos cegos","var(--accent)",A.pontos_cegos));
+  const riscos=arr(A.riscos);
+  if(riscos.length)out.append(h("div",{class:"card stack"},h("div",{class:"sec-h"},h("span",{class:"dot",style:"background:var(--bad)"}),h("h3",null,"Riscos")),
+    riscos.map(r=>{const g=String(r.gravidade||"").toLowerCase();const cor=g.startsWith("a")?"var(--bad)":g.startsWith("m")?"var(--warn)":"var(--good)";
+      return h("div",{class:"risk"},h("div",{class:"row",style:"align-items:center"},h("span",{class:"pill",style:"background:"+cor},"Gravidade "+(g||"?")),),h("b",null,String(r.risco||"")),r.mitigacao?h("p",{class:"small muted"},"Como reduzir: "+r.mitigacao):null)})));
+  out.append(secao("Pontos fracos","var(--bad)",A.pontos_fracos));
+  out.append(secao("Ameaças externas","var(--warn)",A.ameacas));
+  out.append(secao("Pontos fortes","var(--good)",A.pontos_fortes));
+  out.append(secao("Testes baratos antes de investir","var(--brand)",A.testes_baratos));
+  if(A.o_que_mudaria_a_nota)out.append(h("div",{class:"card stack"},h("h3",null,"O que faria a nota subir"),h("p",null,String(A.o_que_mudaria_a_nota))));
+  out.append(h("div",{class:"stack"},
+    h("button",{class:"btn brand block",type:"button",onclick:()=>{S.tab="entrevista";S.idx=S.perguntas.length;render();aprofundar()}},"Responder mais perguntas e reavaliar"),
+    h("button",{class:"btn ghost block",type:"button",onclick:copiar},"Copiar relatório"),
+    h("p",{class:"small muted",style:"text-align:center"},"Avaliado em "+new Date(A.data).toLocaleString("pt-BR"))));
+}
+function relatorioTexto(){
+  const A=S.avaliacao;const L=[];
+  L.push("BANCA DE IDEIAS: "+(S.analise?S.analise.titulo:"Ideia"));
+  L.push("Nota geral: "+String(num(A.nota_geral)).replace(".",",")+"/10. "+(A.veredito||""));L.push("");L.push(A.resumo||"");L.push("");
+  arr(A.areas).forEach(a=>L.push("- "+a.area+": "+String(num(a.nota)).replace(".",",")+". "+(a.justificativa||"")));
+  const bl=(t,x)=>{x=arr(x);if(x.length){L.push("");L.push(t.toUpperCase());x.forEach(i=>L.push("- "+(typeof i==="object"?(i.risco+" ("+i.gravidade+"). Como reduzir: "+i.mitigacao):i)))}};
+  bl("Pontos cegos",A.pontos_cegos);bl("Riscos",A.riscos);bl("Pontos fracos",A.pontos_fracos);bl("Ameaças",A.ameacas);bl("Pontos fortes",A.pontos_fortes);bl("Testes baratos",A.testes_baratos);
+  if(A.o_que_mudaria_a_nota){L.push("");L.push("O QUE FARIA A NOTA SUBIR");L.push(A.o_que_mudaria_a_nota)}
+  return L.join("\n");
+}
+function copiar(){const t=relatorioTexto();
+  try{navigator.clipboard.writeText(t).then(()=>toast("Relatório copiado. Cole no WhatsApp ou e-mail."),()=>mostrarTexto(t))}catch(e){mostrarTexto(t)}}
+function mostrarTexto(t){const ta=h("textarea",{id:"relat",style:"min-height:260px"});ta.value=t;app.append(h("div",{class:"card stack"},h("h3",null,"Selecione e copie"),ta));ta.select()}
+
+/* ---------- Navegação ---------- */
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{S.tab=t.dataset.tab;save();render();window.scrollTo(0,0)}));
+document.getElementById("btnNova").addEventListener("click",()=>{if(busy)return;S=novoEstado();save();render();window.scrollTo(0,0);toast("Nova ideia. As avaliadas continuam no histórico.")});
+render();
+})();
+
+/* ---------- Instalação (padrão Conhecer) ---------- */
+(function(){
+  const card=document.getElementById("instCard"),btn=document.getElementById("instBtn"),passos=document.getElementById("instPassos"),lista=document.getElementById("diagLista");
+  const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+  let fechado=false;try{fechado=sessionStorage.getItem("instFechado")==="1"}catch(e){}
+  const ua=navigator.userAgent||"";
+  const inApp=/FBAN|FBAV|Instagram|WhatsApp|Line\/|; wv\)|GSA\//i.test(ua);
+  const ios=/iPhone|iPad|iPod/i.test(ua);
+  const chrome=/Chrome\//.test(ua)&&!/Edg|OPR|SamsungBrowser|; wv\)/.test(ua);
+  let bip=null;
+  function texto(){
+    passos.replaceChildren();
+    let itens;
+    if(inApp)itens=["Você abriu pelo WhatsApp ou Instagram.","Toque nos 3 pontinhos (no canto de cima).","Escolha \"Abrir no Chrome\" e instale de lá."];
+    else if(ios)itens=["Abra este endereço no Safari.","Toque em Compartilhar (quadrado com seta).","Escolha \"Adicionar à Tela de Início\"."];
+    else itens=["No Chrome, toque nos 3 pontinhos (canto de cima).","Escolha \"Instalar app\" ou \"Adicionar à tela inicial\"."];
+    if(bip)itens=["Toque em Instalar acima. Se preferir, use o caminho abaixo:"].concat(itens);
+    const ol=document.createElement("ol");itens.forEach(t=>{const li=document.createElement("li");li.textContent=t;ol.append(li)});passos.append(ol);
+  }
+  async function diag(){
+    const ck=[];
+    ck.push(["Endereço seguro (https)",location.protocol==="https:"]);
+    ck.push(["Aberto no navegador (não no WhatsApp/Instagram)",!inApp]);
+    ck.push(["Navegador Chrome",chrome||ios]);
+    let man=null;try{man=await (await fetch("manifest.json",{cache:"no-store"})).json()}catch(e){}
+    ck.push(["Manifesto do app",!!man]);
+    ck.push(["Ícone 512",!!(man&&(man.icons||[]).some(i=>/512|any/.test(i.sizes||"")))]);
+    let reg=null;try{reg="serviceWorker" in navigator?await navigator.serviceWorker.getRegistration():null}catch(e){}
+    ck.push(["Modo offline registrado",!!reg]);
+    ck.push(["Modo offline ativo",!!(reg&&reg.active)]);
+    ck.push(["Chrome liberou a instalação",!!bip||standalone]);
+    lista.replaceChildren();ck.forEach(([t,ok])=>{const li=document.createElement("li");li.textContent=(ok?"✅ ":"❌ ")+t;lista.append(li)});
+  }
+  document.getElementById("instDiag").addEventListener("toggle",e=>{if(e.target.open)diag()});
+  document.getElementById("instFechar").addEventListener("click",()=>{card.hidden=true;try{sessionStorage.setItem("instFechado","1")}catch(e){}});
+  window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();bip=e;btn.hidden=false;texto()});
+  btn.addEventListener("click",async()=>{if(!bip)return;bip.prompt();try{const r=await bip.userChoice;if(r.outcome==="accepted")card.hidden=true}catch(e){}bip=null;btn.hidden=true;texto()});
+  window.addEventListener("appinstalled",()=>{card.hidden=true});
+  if(!standalone&&!fechado){card.hidden=false;texto()}
+  if("serviceWorker" in navigator)window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js",{scope:"./"}).catch(()=>{})});
+})();
+</script>
+
+</body>
+</html>
