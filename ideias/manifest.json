@@ -1,0 +1,19 @@
+{
+  "name": "Banca de Ideias",
+  "short_name": "Banca de Ideias",
+  "description": "Teste sua ideia de negócio diante de uma banca cética: entrevista guiada e nota de 0 a 10 com riscos e pontos cegos.",
+  "lang": "pt-BR",
+  "id": "/ideias/",
+  "start_url": "/ideias/",
+  "scope": "/ideias/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F5E58",
+  "theme_color": "#0F5E58",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-maskable.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
